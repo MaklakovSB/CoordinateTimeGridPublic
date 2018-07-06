@@ -1,0 +1,16 @@
+C:\Work\СoordinateTimeGridSample\СoordinateTimeGridSample\bin\Debug\СoordinateTimeGridSample.exe.config
+C:\Work\СoordinateTimeGridSample\СoordinateTimeGridSample\bin\Debug\СoordinateTimeGridSample.exe
+C:\Work\СoordinateTimeGridSample\СoordinateTimeGridSample\bin\Debug\СoordinateTimeGridSample.pdb
+C:\Work\СoordinateTimeGridSample\СoordinateTimeGridSample\bin\Debug\WPF.CTG.dll
+C:\Work\СoordinateTimeGridSample\СoordinateTimeGridSample\bin\Debug\WPF.CTG.pdb
+C:\Work\СoordinateTimeGridSample\СoordinateTimeGridSample\obj\Debug\СoordinateTimeGridSample.csprojResolveAssemblyReference.cache
+C:\Work\СoordinateTimeGridSample\СoordinateTimeGridSample\obj\Debug\MainWindow.g.cs
+C:\Work\СoordinateTimeGridSample\СoordinateTimeGridSample\obj\Debug\App.g.cs
+C:\Work\СoordinateTimeGridSample\СoordinateTimeGridSample\obj\Debug\СoordinateTimeGridSample_MarkupCompile.cache
+C:\Work\СoordinateTimeGridSample\СoordinateTimeGridSample\obj\Debug\СoordinateTimeGridSample_MarkupCompile.lref
+C:\Work\СoordinateTimeGridSample\СoordinateTimeGridSample\obj\Debug\MainWindow.baml
+C:\Work\СoordinateTimeGridSample\СoordinateTimeGridSample\obj\Debug\СoordinateTimeGridSample.g.resources
+C:\Work\СoordinateTimeGridSample\СoordinateTimeGridSample\obj\Debug\СoordinateTimeGridSample.Properties.Resources.resources
+C:\Work\СoordinateTimeGridSample\СoordinateTimeGridSample\obj\Debug\СoordinateTimeGridSample.csproj.GenerateResource.Cache
+C:\Work\СoordinateTimeGridSample\СoordinateTimeGridSample\obj\Debug\СoordinateTimeGridSample.exe
+C:\Work\СoordinateTimeGridSample\СoordinateTimeGridSample\obj\Debug\СoordinateTimeGridSample.pdb
