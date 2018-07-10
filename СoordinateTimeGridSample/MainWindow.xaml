@@ -22,31 +22,7 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <!--<Canvas Background="Black">
-            <ctg:ScalableCoordinatePlane Canvas.Left="{Binding CanvasLeft}"
-                                         Canvas.Top="{Binding CanvasTop}"
-                                         Width="5000"
-                                         Height="5000"
-                                         GridColor="White" />
-        </Canvas>-->
-
-        <ctg:CoordinateTimeGrid Grid.Row="0"
-                                Grid.Column="0"/>
-
-        <!--<ScrollViewer Grid.Row="0"
-                      Grid.Column="0"
-                      HorizontalScrollBarVisibility="Visible"
-                      VerticalScrollBarVisibility="Visible">
-            <Canvas x:Name="_canvasParent"
-                    Background="#FF3A3A3A"
-                    ClipToBounds="True">
-                <ctg:ScalableCoordinatePlane Width="5000"
-                                           Height="5000"
-                                           Margin="4,0,4,0"
-                                           GridColor="White"/>
-            </Canvas>
-
-        </ScrollViewer>-->
+        <ctg:ScalableCoordinateTimeGrid />
 
         <Grid Grid.Row="1" Grid.Column="0">
             <Grid.ColumnDefinitions>

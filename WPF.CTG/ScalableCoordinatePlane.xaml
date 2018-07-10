@@ -5,9 +5,4 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         d:DesignHeight="100"
         d:DesignWidth="200"
-        Loaded="loaded"
-        MouseDown="mouseDown"
-        MouseMove="mouseMove"
-        MouseUp="mouseUp"
-        MouseWheel="mouseWheel"
         mc:Ignorable="d" />

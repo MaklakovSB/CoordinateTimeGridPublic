@@ -41,41 +41,11 @@ namespace WPF.CTG
         /// <summary>
         /// Ссылка на родительский канвас-рамку
         /// </summary>
-        //public Canvas CoordinateViewPort
-        //{
-        //    get
-        //    {
-        //        if (_canvasParent == null)
-        //            throw new Exception("Не привязан родительский канвас.");
-
-        //        return _canvasParent;
-        //    }
-        //    private set
-        //    {
-        //        _canvasParent = value;
-        //        OnPropertyChanged(nameof(CoordinateViewPort));
-        //    }
-        //}
         private Canvas _coordinateViewPort;
 
         /// <summary>
         /// Ссылка на координатную плоскость
         /// </summary>
-        //public ScalableCoordinatePlane ScalableCoordinatePlane
-        //{
-        //    get
-        //    {
-        //        if (_canvasParent == null)
-        //            throw new Exception("Не привязан родительский канвас.");
-
-        //        return _scalableCoordinatePlane;
-        //    }
-        //    private set
-        //    {
-        //        _scalableCoordinatePlane = value;
-        //        OnPropertyChanged(nameof(ScalableCoordinatePlane));
-        //    }
-        //}
         private ScalableCoordinatePlane _scalableCoordinatePlane;
 
         /// <summary>
@@ -163,20 +133,6 @@ namespace WPF.CTG
         private double _canvasTop = 0;
 
         /// <summary>
-        /// Общий накапливаемый коэффициент масштаба.
-        /// </summary>
-        public double AccumulatedScaleFactor
-        {
-            get { return _accumulatedScaleFactor; }
-            set
-            {
-                _accumulatedScaleFactor = value;
-                OnPropertyChanged(nameof(AccumulatedScaleFactor));
-            }
-        }
-        private double _accumulatedScaleFactor = 1;
-
-        /// <summary>
         /// Накапливаемый коэффициент масштаба по оси X.
         /// </summary>
         public double ScaleRateX
@@ -204,17 +160,43 @@ namespace WPF.CTG
         }
         private double _scaleRateY = 1.0;
 
+        /// <summary>
+        /// Общий накапливаемый коэффициент масштаба.
+        /// </summary>
+        public double AccumulatedScaleFactor
+        {
+            get { return _accumulatedScaleFactor; }
+            set
+            {
+                _accumulatedScaleFactor = value;
+                OnPropertyChanged(nameof(AccumulatedScaleFactor));
+            }
+        }
+        private double _accumulatedScaleFactor = 1;
+
         #endregion
 
         #region * Конструктор
 
-        public TransformManager(Canvas canvas, ScalableCoordinatePlane scalableCoordinatePlane)
+        /// <summary>
+        /// * Конструктор
+        /// </summary>
+        public TransformManager()
+        {}
+
+        #endregion
+
+        #region Инициализация
+
+        /// <summary>
+        /// Инициализация
+        /// </summary>
+        /// <param name="canvas"></param>
+        /// <param name="scalableCoordinatePlane"></param>
+        public void TransformInit(Canvas canvas, ScalableCoordinatePlane scalableCoordinatePlane)
         {
             _coordinateViewPort = canvas;
             _scalableCoordinatePlane = scalableCoordinatePlane;
-
-            _coordinateViewPort.DataContext = this;
-            _coordinateViewPort.DataContext = this;
 
             _scalableCoordinatePlane.MouseDown += mouseDown;
             _scalableCoordinatePlane.MouseUp += mouseUp;
@@ -222,33 +204,9 @@ namespace WPF.CTG
             _scalableCoordinatePlane.MouseWheel += mouseWheel;
         }
 
-        //public void TransformInit(Canvas canvas, ScalableCoordinatePlane scalableCoordinatePlane)
-        //{
-        //    _coordinateViewPort = canvas;
-        //    _scalableCoordinatePlane = scalableCoordinatePlane;
-
-        //    _coordinateViewPort.DataContext = this;
-        //    _coordinateViewPort.DataContext = this;
-
-        //    _scalableCoordinatePlane.MouseDown += mouseDown;
-        //    _scalableCoordinatePlane.MouseUp += mouseUp;
-        //    _scalableCoordinatePlane.MouseMove += mouseMove;
-        //    _scalableCoordinatePlane.MouseWheel += mouseWheel;
-        //}
-
         #endregion
 
         #region Обработчики событий
-
-        /// <summary>
-        /// Обработчик загрузки контрола.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        //private void loaded(object sender, RoutedEventArgs e)
-        //{
-        //    _canvasParent = (Canvas)this.Parent;
-        //}
 
         /// <summary>
         /// Обработчик нажатия клавиши мыши. 
