@@ -16,7 +16,7 @@
             MouseDown="mouseDown"
             MouseMove="mouseMove"
             MouseUp="mouseUp"
-            MouseWheel="wheelEvent">
+            MouseWheel="mouseWheel">
         <Canvas.Background>
             <DrawingBrush TileMode="FlipXY"
                           Viewport="0,0,10,10"

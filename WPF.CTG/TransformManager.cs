@@ -1,15 +1,12 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
+using System.ComponentModel;
 using System.Windows.Input;
 
 namespace WPF.CTG
 {
-    /// <summary>
-    /// Interaction logic for CoordinatePlane.xaml
-    /// </summary>
-    public partial class CoordinatePlane : UserControl, INotifyPropertyChanged
+    public class TransformManager: INotifyPropertyChanged
     {
         #region Константы
 
@@ -44,22 +41,42 @@ namespace WPF.CTG
         /// <summary>
         /// Ссылка на родительский канвас-рамку
         /// </summary>
-        public Canvas CanvasParent
-        {
-            get
-            {
-                if (_canvasParent == null)
-                    throw new Exception("Не привязан родительский канвас.");
+        //public Canvas CoordinateViewPort
+        //{
+        //    get
+        //    {
+        //        if (_canvasParent == null)
+        //            throw new Exception("Не привязан родительский канвас.");
 
-                return _canvasParent;
-            }
-            set
-            {
-                _canvasParent = value;
-                OnPropertyChanged(nameof(CanvasParent));
-            }
-        }
-        private Canvas _canvasParent;
+        //        return _canvasParent;
+        //    }
+        //    private set
+        //    {
+        //        _canvasParent = value;
+        //        OnPropertyChanged(nameof(CoordinateViewPort));
+        //    }
+        //}
+        private Canvas _coordinateViewPort;
+
+        /// <summary>
+        /// Ссылка на координатную плоскость
+        /// </summary>
+        //public ScalableCoordinatePlane ScalableCoordinatePlane
+        //{
+        //    get
+        //    {
+        //        if (_canvasParent == null)
+        //            throw new Exception("Не привязан родительский канвас.");
+
+        //        return _scalableCoordinatePlane;
+        //    }
+        //    private set
+        //    {
+        //        _scalableCoordinatePlane = value;
+        //        OnPropertyChanged(nameof(ScalableCoordinatePlane));
+        //    }
+        //}
+        private ScalableCoordinatePlane _scalableCoordinatePlane;
 
         /// <summary>
         /// Координата X опорной точки масштабирования координатной плоскости. ZoomCenterX
@@ -189,16 +206,35 @@ namespace WPF.CTG
 
         #endregion
 
-        #region * Конструкторы
+        #region * Конструктор
 
-        /// <summary>
-        /// * Конструктор
-        /// </summary>
-        public CoordinatePlane()
+        public TransformManager(Canvas canvas, ScalableCoordinatePlane scalableCoordinatePlane)
         {
-            DataContext = this;
-            InitializeComponent();
+            _coordinateViewPort = canvas;
+            _scalableCoordinatePlane = scalableCoordinatePlane;
+
+            _coordinateViewPort.DataContext = this;
+            _coordinateViewPort.DataContext = this;
+
+            _scalableCoordinatePlane.MouseDown += mouseDown;
+            _scalableCoordinatePlane.MouseUp += mouseUp;
+            _scalableCoordinatePlane.MouseMove += mouseMove;
+            _scalableCoordinatePlane.MouseWheel += mouseWheel;
         }
+
+        //public void TransformInit(Canvas canvas, ScalableCoordinatePlane scalableCoordinatePlane)
+        //{
+        //    _coordinateViewPort = canvas;
+        //    _scalableCoordinatePlane = scalableCoordinatePlane;
+
+        //    _coordinateViewPort.DataContext = this;
+        //    _coordinateViewPort.DataContext = this;
+
+        //    _scalableCoordinatePlane.MouseDown += mouseDown;
+        //    _scalableCoordinatePlane.MouseUp += mouseUp;
+        //    _scalableCoordinatePlane.MouseMove += mouseMove;
+        //    _scalableCoordinatePlane.MouseWheel += mouseWheel;
+        //}
 
         #endregion
 
@@ -209,10 +245,10 @@ namespace WPF.CTG
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void loaded(object sender, RoutedEventArgs e)
-        {
-            _canvasParent = (Canvas)this.Parent;
-        }
+        //private void loaded(object sender, RoutedEventArgs e)
+        //{
+        //    _canvasParent = (Canvas)this.Parent;
+        //}
 
         /// <summary>
         /// Обработчик нажатия клавиши мыши. 
@@ -257,7 +293,7 @@ namespace WPF.CTG
             if (_dragStart != null && e.RightButton == MouseButtonState.Pressed)
             {
                 var element = (UIElement)sender;
-                if (element == null || _canvasParent == null)
+                if (element == null || _coordinateViewPort == null)
                     return;
 
                 // Получим текущее положение мыши
@@ -273,13 +309,13 @@ namespace WPF.CTG
 
                 // Получаем верхние левые крайние точки внутреннего и внешнего холста
                 // для контроля верхней и левой границы.
-                var ptsPMin = _canvasParent.PointToScreen(new Point() { X = 0, Y = 0 });
-                var ptsCMin = _canvasCoordinatePlane.PointToScreen(new Point() { X = 0, Y = 0 });
+                var ptsPMin = _coordinateViewPort.PointToScreen(new Point() { X = 0, Y = 0 });
+                var ptsCMin = _scalableCoordinatePlane.PointToScreen(new Point() { X = 0, Y = 0 });
 
                 // Получаем нижние правые крайние точки внутреннего и внешнего холста
                 // для контроля нижней и правой границы.
-                var ptsPMax = _canvasParent.PointToScreen(new Point() { X = _canvasParent.ActualWidth, Y = _canvasParent.ActualHeight });
-                var ptsCMax = _canvasCoordinatePlane.PointToScreen(new Point() { X = _canvasCoordinatePlane.ActualWidth, Y = _canvasCoordinatePlane.ActualHeight });
+                var ptsPMax = _coordinateViewPort.PointToScreen(new Point() { X = _coordinateViewPort.ActualWidth, Y = _coordinateViewPort.ActualHeight });
+                var ptsCMax = _scalableCoordinatePlane.PointToScreen(new Point() { X = _scalableCoordinatePlane.ActualWidth, Y = _scalableCoordinatePlane.ActualHeight });
 
                 if (deltaX > 0) // Смещение вправо
                 {
@@ -481,10 +517,10 @@ namespace WPF.CTG
         {
             return new ExtremePoints()
             {
-                ExternalCanvasMinimum = _canvasParent.PointToScreen(new Point() { X = 0, Y = 0 }),
-                ExternalCanvasMaximum = _canvasParent.PointToScreen(new Point() { X = _canvasParent.ActualWidth, Y = _canvasParent.ActualHeight }),
-                InternalCanvasMinimum = _canvasCoordinatePlane.PointToScreen(new Point() { X = 0, Y = 0 }),
-                InternalCanvasMaximum = _canvasCoordinatePlane.PointToScreen(new Point() { X = _canvasCoordinatePlane.ActualWidth, Y = _canvasCoordinatePlane.ActualHeight })
+                ExternalCanvasMinimum = _coordinateViewPort.PointToScreen(new Point() { X = 0, Y = 0 }),
+                ExternalCanvasMaximum = _coordinateViewPort.PointToScreen(new Point() { X = _coordinateViewPort.ActualWidth, Y = _coordinateViewPort.ActualHeight }),
+                InternalCanvasMinimum = _scalableCoordinatePlane.PointToScreen(new Point() { X = 0, Y = 0 }),
+                InternalCanvasMaximum = _scalableCoordinatePlane.PointToScreen(new Point() { X = _scalableCoordinatePlane.ActualWidth, Y = _scalableCoordinatePlane.ActualHeight })
             };
         }
 
@@ -503,5 +539,6 @@ namespace WPF.CTG
         public event PropertyChangedEventHandler PropertyChanged;
 
         #endregion
+
     }
 }

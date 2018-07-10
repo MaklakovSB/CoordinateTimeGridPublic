@@ -3,33 +3,64 @@ using System.ComponentModel;
 using System.Windows.Controls;
 using System.Collections.ObjectModel;
 using System.Windows;
-using WPF.CTG.Converters;
+using System.Windows.Media;
 
 namespace WPF.CTG
 {
     /// <summary>
     /// Interaction logic for CoordinateTimeGrid.xaml
     /// </summary>
-    //[ContentProperty("Children")]
     public partial class CoordinateTimeGrid : UserControl, INotifyPropertyChanged
     {
-        #region Константы
-        #endregion
-
-        #region Статические члены класса
-        #endregion
-
-        #region Приватные поля
-
-        //private CoordinatePlane _coordinatePlane;
-
-        #endregion
-
         #region Свойства зависимости
+
+        /// <summary>
+        /// Цвет разметочной сетки.
+        /// </summary>
+        public static readonly DependencyProperty GridColorProperty = DependencyProperty.Register(
+            nameof(GridColor),
+            typeof(Color),
+            typeof(CoordinateTimeGrid),
+            new PropertyMetadata(Colors.Black, OnGridColorPropertyChange));
+
         #endregion
 
-        #region События свойств зависимости
+        #region Акцессоры свойств зависимости
+
+        /// <summary>
+        /// Цвет разметочной сетки
+        /// </summary>
+        public Color GridColor
+        {
+            get { return (Color)base.GetValue(GridColorProperty); }
+            set
+            {
+                SetValue(GridColorProperty, value);
+                OnPropertyChanged(nameof(GridColor));
+            }
+        }
+
         #endregion
+
+        #region Обработчики событий свойств зависимости
+
+        /// <summary>
+        /// Изменение цвета разметочной сетки.
+        /// </summary>
+        /// <param name="d"></param>
+        /// <param name="e"></param>
+        private static void OnGridColorPropertyChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var obj = d as CoordinateTimeGrid;
+            if (obj != null)
+            {
+                var gc = obj._scalableCoordinatePlane.GridColor;
+                gc = (Color)e.NewValue;
+            }
+        }
+
+        #endregion
+
 
         #region Свойства
 
@@ -60,16 +91,6 @@ namespace WPF.CTG
             }
         }
         private Visibility _horizontalScrollBarVisibility = Visibility.Collapsed;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public double MaximumScrlY => _coordinatePlane.ActualHeight * _coordinatePlane.ScaleRateY; // - _canvasParent.ActualHeight;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public double MaximumScrlX => _coordinatePlane.ActualWidth * _coordinatePlane.ScaleRateX;// - _canvasParent.ActualWidth;
 
         /// <summary>
         /// Коллекция для хранения нумерации делений шкалы.
