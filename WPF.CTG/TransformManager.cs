@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.Windows;
 using System.Windows.Controls;
 using System.ComponentModel;
@@ -13,7 +14,7 @@ namespace WPF.CTG
         /// <summary>
         /// Минимальный предел множителя масштаба
         /// </summary>
-        private const double MinScaleFactor = 0.18;
+        private const double MinScaleFactor = 0.3;
 
         /// <summary>
         /// Максимальный предел множителя масштаба
@@ -140,6 +141,12 @@ namespace WPF.CTG
             get { return _scaleRateX; }
             set
             {
+                if (value > MaxScaleFactor)
+                    value = MaxScaleFactor;
+
+                if (value < MinScaleFactor)
+                    value = MinScaleFactor;
+
                 _scaleRateX = value;
                 OnPropertyChanged(nameof(ScaleRateX));
             }
@@ -154,6 +161,12 @@ namespace WPF.CTG
             get { return _scaleRateY; }
             set
             {
+                if (value > MaxScaleFactor)
+                    value = MaxScaleFactor;
+
+                if (value < MinScaleFactor)
+                    value = MinScaleFactor;
+
                 _scaleRateY = value;
                 OnPropertyChanged(nameof(ScaleRateY));
             }
@@ -168,6 +181,12 @@ namespace WPF.CTG
             get { return _accumulatedScaleFactor; }
             set
             {
+                if(value > MaxScaleFactor )
+                    value = MaxScaleFactor;
+
+                if (value < MinScaleFactor)
+                    value = MinScaleFactor;
+
                 _accumulatedScaleFactor = value;
                 OnPropertyChanged(nameof(AccumulatedScaleFactor));
             }
@@ -196,6 +215,8 @@ namespace WPF.CTG
         public void TransformInit(Canvas canvas, ScalableCoordinatePlane scalableCoordinatePlane)
         {
             _coordinateViewPort = canvas;
+            _coordinateViewPort.SizeChanged += sizeChanged;
+
             _scalableCoordinatePlane = scalableCoordinatePlane;
 
             _scalableCoordinatePlane.MouseDown += mouseDown;
@@ -358,89 +379,94 @@ namespace WPF.CTG
             if (elementCanvas == null)
                 return;
 
+            // Получим дельту
             var delta = e.Delta;
 
-            // Ограничение масштаба
-            if ((AccumulatedScaleFactor > MaxScaleFactor && delta > 0)
-                || (AccumulatedScaleFactor < MinScaleFactor && delta < 0))
+            // Ограничение масштаба.
+            // Если уже применённый коэффициент масштаба больше или равен максимальному при положительной дельте либо
+            // если уже применённый коэффициент масштаба меньше или равен минимальному при отрицательной дельте.
+            if ((AccumulatedScaleFactor >= MaxScaleFactor && delta > 0)
+                || (AccumulatedScaleFactor <= MinScaleFactor && delta < 0))
                 return;
 
-            // Получим коэффициент масштабирования в зависимости от дельты
+            // Получим шаг масштабирования в зависимости от дельты
             var scalingRateStep = GetScalingRateStep(delta);
 
-            // Получаем контрольные точки.
-            var extremePoints = GetCanvasControlPoints();
-
-            // Условия нарушение границ
-            var left = extremePoints.ExternalCanvasMinimum.X <= extremePoints.InternalCanvasMinimum.X;   // ptsPMin.X <= ptsCMin.X;
-            var top = extremePoints.ExternalCanvasMinimum.Y <= extremePoints.InternalCanvasMinimum.Y;    //ptsPMin.Y <= ptsCMin.Y;
-            var right = extremePoints.ExternalCanvasMaximum.X >= extremePoints.InternalCanvasMaximum.X;  //ptsPMax.X >= ptsCMax.X;
-            var bottom = extremePoints.ExternalCanvasMaximum.Y >= extremePoints.InternalCanvasMaximum.Y; //ptsPMax.Y >= ptsCMax.Y;
+            // Получим показатель уменьшения масштаба.
             var decreaseScale = scalingRateStep < 1;
 
-            // Отсечём варинты нарушения противоположных границ
-            // при попытке уменьшения масштаба. Это признак предела
-            // адеватного масштабирования.
-            if (left && right && decreaseScale)
-                return;
-
-            if (top && bottom && decreaseScale)
-                return;
-
-            // Если дельта равна нулю то множитель масштаба равен единице
-            if (scalingRateStep != 1)
+            // Если предстоит уменьшение масштаба, то нужно проверить не станет ли координатная плоскость менше
+            // ViewPort'а либо по ширине либо по высоте.
+            if (decreaseScale)
             {
-                // Получаем точку положения курсора мыши и устанавливаем её как опорную для масштабирования канваса
-                var position = e.GetPosition(elementCanvas);
-                ScaleCenterX = position.X;
-                ScaleCenterY = position.Y;
+                // Получим ширины и высоты ViewPort'а и координатной плоскости с учётом масштаба.
+                var widthPlane = _scalableCoordinatePlane.ActualWidth * ScaleRateX * scalingRateStep;
+                var heightPlane = _scalableCoordinatePlane.ActualHeight * ScaleRateY * scalingRateStep;
+                var widthViewPort = _coordinateViewPort.ActualWidth;
+                var heightViewPort = _coordinateViewPort.ActualHeight;
 
-                // Рсчёт масштаба
-                _scalingRateStep = scalingRateStep;
-                ScaleRateX *= _scalingRateStep;
-                ScaleRateY *= _scalingRateStep;
-                AccumulatedScaleFactor *= _scalingRateStep;
+                // Получим разницу размеров между внутренним и внешним контролом.
+                var differenceWidth = widthPlane - widthViewPort;
+                var differenceHeight = heightPlane - heightViewPort;
 
-                // Дело в том что положение мыши меняется во время преобразования относительно канваса.
-                // И следующий шаг прокрутки колеса по инерции происходит с опорной точкой которая оказывается за 
-                // пределами канваса, в результате канвас улетает из под мыши далеко за пределы видимости, 
-                // но Mouse.GetPosition позволяет получить точную точку после очередного преобразования холста.
-                Point cursorpos = Mouse.GetPosition(elementCanvas);
+                // Если разница менше чем -2, то образуется брешь и нужно скорретировать новый шаг масштаба.
 
-                var discrepancyX = cursorpos.X - position.X;
-                var discrepancyY = cursorpos.Y - position.Y;
-
-                // Компенсируем сдвиг канваса после масштабирования
-                MoveX += discrepancyX;
-                MoveY += discrepancyY;
-
-                // Получаем контрольные точки.
-                extremePoints = GetCanvasControlPoints();
-
-                // Определим условия нарушение границ.
-                left = extremePoints.ExternalCanvasMinimum.X < extremePoints.InternalCanvasMinimum.X;
-                top = extremePoints.ExternalCanvasMinimum.Y < extremePoints.InternalCanvasMinimum.Y;
-                right = extremePoints.ExternalCanvasMaximum.X > extremePoints.InternalCanvasMaximum.X;
-                bottom = extremePoints.ExternalCanvasMaximum.Y > extremePoints.InternalCanvasMaximum.Y;
-
-                if (left)
+                if (differenceWidth < -2 || differenceHeight < -2)
                 {
-                    MoveX += (extremePoints.InternalCanvasMinimum.X - extremePoints.ExternalCanvasMinimum.X) / AccumulatedScaleFactor * -1;
-                }
-                else if (right)
-                {
-                    MoveX += (extremePoints.InternalCanvasMaximum.X - extremePoints.ExternalCanvasMaximum.X) / AccumulatedScaleFactor * -1;
+                    var correctedScalingRateStep = 0.0;
+
+                    if (differenceWidth < differenceHeight)
+                    {
+                        correctedScalingRateStep = (widthViewPort - 2) / widthPlane;
+                    }
+                    else
+                    {
+                        correctedScalingRateStep = (heightViewPort - 2) / heightPlane;
+                    }
+
+                    scalingRateStep *= correctedScalingRateStep;
                 }
 
-                if (top)
-                {
-                    MoveY += (extremePoints.InternalCanvasMinimum.Y - extremePoints.ExternalCanvasMinimum.Y) / AccumulatedScaleFactor * -1;
-                }
-                else if (bottom)
-                {
-                    MoveY += (extremePoints.InternalCanvasMaximum.Y - extremePoints.ExternalCanvasMaximum.Y) / AccumulatedScaleFactor * -1;
-                }
             }
+
+            ////// Получаем контрольные точки.
+            ////var extremePoints = GetCanvasControlPoints();
+            ////
+            ////// Условия нарушение границ
+            ////var left = extremePoints.ExternalCanvasMinimum.X <= extremePoints.InternalCanvasMinimum.X;
+            ////var top = extremePoints.ExternalCanvasMinimum.Y <= extremePoints.InternalCanvasMinimum.Y;
+            ////var right = extremePoints.ExternalCanvasMaximum.X >= extremePoints.InternalCanvasMaximum.X;
+            ////var bottom = extremePoints.ExternalCanvasMaximum.Y >= extremePoints.InternalCanvasMaximum.Y;
+            ////
+            ////// Отсечём варинты нарушения противоположных границ
+            ////// при попытке уменьшения масштаба. Это признак предела
+            ////// адеватного масштабирования.
+            ////if ((left && right && decreaseScale) || (top && bottom && decreaseScale))
+            ////    return;
+
+            ScalePlane(scalingRateStep);
+
+            // Компенсационное смещение координатной плоскости в случае если образовалась брешь.
+            CompensationOffset();
+            //CompensationScale();
+            //CompensationOffset();
+
+
+        }
+
+        /// <summary>
+        /// Обработчик события изменения размера ViewPort
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void sizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            var elementCanvas = sender as Canvas;
+            if (elementCanvas == null)
+                return;
+
+            //CompensationScale();
+
         }
 
         #endregion
@@ -462,7 +488,7 @@ namespace WPF.CTG
                 return 1.05;
 
             if (delta < 0)
-                return 1.0 / 1.05;
+                return 0.95;
 
             return _scalingRateStep = 1.0;
         }
@@ -482,6 +508,137 @@ namespace WPF.CTG
             };
         }
 
+        /// <summary>
+        /// Метод масштабирования.
+        /// </summary>
+        private void ScalePlane(double scalingRateStep, double? scaleCenterX = null, double? scaleCenterY = null)
+        {
+            // Если дельта равна нулю то множитель масштаба равен единице
+            if (scalingRateStep != 1)
+            {
+                // Получаем точку положения курсора мыши и устанавливаем её как опорную для масштабирования канваса
+                var position = Mouse.GetPosition(_scalableCoordinatePlane);
+                ScaleCenterX = scaleCenterX ?? position.X;
+                ScaleCenterY = scaleCenterY ?? position.Y;
+
+                // Рсчёт масштаба
+                _scalingRateStep = scalingRateStep;
+                ScaleRateX *= _scalingRateStep;
+                ScaleRateY *= _scalingRateStep;
+                AccumulatedScaleFactor *= _scalingRateStep;
+
+                // Дело в том что положение мыши меняется во время преобразования относительно канваса.
+                // И следующий шаг прокрутки колеса по инерции происходит с опорной точкой которая оказывается за 
+                // пределами канваса, в результате канвас улетает из под мыши далеко за пределы видимости, 
+                // но Mouse.GetPosition позволяет получить точную точку после очередного преобразования холста.
+                var cursorpos = Mouse.GetPosition(_scalableCoordinatePlane);
+                var discrepancyX = (scaleCenterX ?? cursorpos.X) - position.X;
+                var discrepancyY = (scaleCenterY ?? cursorpos.Y) - position.Y;
+
+                // Компенсируем сдвиг канваса после масштабирования
+                MoveX += discrepancyX;
+                MoveY += discrepancyY;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private void CompensationScale()
+        {
+            // Получим реальный размер координатной плоскости с учётом масштаба.
+            var planeHeight = _scalableCoordinatePlane.ActualHeight * AccumulatedScaleFactor;
+            var planeWidth = _scalableCoordinatePlane.ActualWidth * AccumulatedScaleFactor;
+
+            // Определим условия нарушения границ - образования бреши из-за маленького масштаба.
+            var breachHeight = planeHeight < _coordinateViewPort.ActualHeight;
+            var breachWidth = planeWidth < _coordinateViewPort.ActualWidth;
+
+            double deltaHeight = 0;
+            double deltaWidth = 0;
+
+            // Если есть брешь из-за маленького масштаба
+            if (breachHeight || breachWidth)
+            {
+                double factorH = 0;
+                double factorW = 0;
+
+                // Если есть брешь по высоте.
+                if (breachHeight)
+                {
+                    // Получим высоту бреши как дельту для компенсационного масштабирования.
+                    deltaHeight = _coordinateViewPort.ActualHeight - planeHeight;
+                    factorH = _coordinateViewPort.ActualHeight / planeHeight;
+                }
+
+                // Если есть брешь по ширине.
+                if (breachWidth)
+                {
+                    // Получим ширину бреши как дельту для компенсационного масштабирования.
+                    deltaWidth = _coordinateViewPort.ActualWidth - planeWidth;
+                    factorW = _coordinateViewPort.ActualWidth / planeWidth;
+                }
+
+                
+
+
+                // Получим большую дельту.
+                //var delta = deltaHeight > deltaWidth ? deltaHeight : deltaWidth;
+
+
+                var MaxFactor = factorH > factorW ? factorH : factorW;
+                if (MaxFactor != 0)
+                {
+                    // Компенсируем брешь увеличением масштаба.
+                    ScalePlane(MaxFactor,
+                        (_scalableCoordinatePlane.ActualHeight * AccumulatedScaleFactor) / 2,
+                        (_scalableCoordinatePlane.ActualWidth * AccumulatedScaleFactor) / 2);
+                }
+            }
+            //else
+            //{
+            //    // Компенсируем брешь смещением координатной плоскости.
+            //    CompensationOffset();
+            //}
+        }
+
+        /// <summary>
+        /// Компенсационное смещение координатной плоскости в случае если образовалась брешь.
+        /// </summary>
+        private void CompensationOffset()
+        {
+            // Получаем контрольные точки.
+            var extremePoints = GetCanvasControlPoints();
+
+            // Определим условия нарушение границ - образования бреши.
+            var left = extremePoints.ExternalCanvasMinimum.X < extremePoints.InternalCanvasMinimum.X;
+            var top = extremePoints.ExternalCanvasMinimum.Y < extremePoints.InternalCanvasMinimum.Y;
+            var right = extremePoints.ExternalCanvasMaximum.X > extremePoints.InternalCanvasMaximum.X;
+            var bottom = extremePoints.ExternalCanvasMaximum.Y > extremePoints.InternalCanvasMaximum.Y;
+
+            if (left)
+            {
+                MoveX += (extremePoints.InternalCanvasMinimum.X - (extremePoints.ExternalCanvasMinimum.X + 1)) /
+                         AccumulatedScaleFactor * -1;
+            }
+            else if (right)
+            {
+                MoveX += (extremePoints.InternalCanvasMaximum.X - (extremePoints.ExternalCanvasMaximum.X -1)) /
+                         AccumulatedScaleFactor * -1;
+            }
+
+            if (top)
+            {
+                MoveY += (extremePoints.InternalCanvasMinimum.Y - (extremePoints.ExternalCanvasMinimum.Y + 1)) /
+                         AccumulatedScaleFactor * -1;
+            }
+            else if (bottom)
+            {
+                MoveY += (extremePoints.InternalCanvasMaximum.Y - (extremePoints.ExternalCanvasMaximum.Y -1)) /
+                         AccumulatedScaleFactor * -1;
+            }
+        }
+
         #endregion
 
         #region Реализация интерфейсов
@@ -497,6 +654,5 @@ namespace WPF.CTG
         public event PropertyChangedEventHandler PropertyChanged;
 
         #endregion
-
     }
 }

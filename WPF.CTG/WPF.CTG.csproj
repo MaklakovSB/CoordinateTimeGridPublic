@@ -42,21 +42,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Converters\DoubleInvertSignConverter.cs" />
-    <Compile Include="CoordinatePlane.xaml.cs">
-      <DependentUpon>CoordinatePlane.xaml</DependentUpon>
-    </Compile>
     <Compile Include="ScalableCoordinatePlane.xaml.cs">
       <DependentUpon>ScalableCoordinatePlane.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="CoordinateTimeGrid.xaml.cs">
-      <DependentUpon>CoordinateTimeGrid.xaml</DependentUpon>
     </Compile>
     <Compile Include="ExtremePoints.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScalableCoordinateTimeGrid.xaml.cs">
       <DependentUpon>ScalableCoordinateTimeGrid.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ScaleManager.cs" />
     <Compile Include="TimeMark.cs" />
     <Compile Include="TransformManager.cs" />
   </ItemGroup>
@@ -65,15 +58,7 @@
     <Folder Include="Events\" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="CoordinatePlane.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="ScalableCoordinatePlane.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="CoordinateTimeGrid.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

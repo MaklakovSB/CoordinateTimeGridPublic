@@ -5,4 +5,5 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         d:DesignHeight="100"
         d:DesignWidth="200"
+        SnapsToDevicePixels="True"
         mc:Ignorable="d" />

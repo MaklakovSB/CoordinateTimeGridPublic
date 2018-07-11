@@ -6,20 +6,31 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              x:Name="RootUserControl"
              d:DesignHeight="300"
-             d:DesignWidth="300"
+             d:DesignWidth="600"
              mc:Ignorable="d">
+    <UserControl.Resources>
+        <Style TargetType="TextBlock">
+            <Setter Property="FontSize" Value="18" />
+            <Setter Property="Foreground" Value="Chartreuse" />
+        </Style>
+    </UserControl.Resources>
 
     <Canvas x:Name="_coordinateViewPort"
+            MaxWidth="{Binding ActualWidth,
+                               ElementName=_scalableCoordinatePlane}"
+            MaxHeight="{Binding ActualHeight,
+                                ElementName=_scalableCoordinatePlane}"
             Background="Black"
-            ClipToBounds="True">
+            ClipToBounds="True"
+            SnapsToDevicePixels="True">
 
         <local:ScalableCoordinatePlane x:Name="_scalableCoordinatePlane"
                                        Canvas.Left="{Binding TransformManager.CanvasLeft,
                                                              ElementName=RootUserControl}"
                                        Canvas.Top="{Binding TransformManager.CanvasTop,
                                                             ElementName=RootUserControl}"
-                                       Width="5000"
-                                       Height="2000"
+                                       Width="1200"
+                                       Height="800"
                                        GridColor="White"
                                        MoveX="{Binding TransformManager.MoveX,
                                                        ElementName=RootUserControl}"
@@ -32,6 +43,174 @@
                                        ScaleRateX="{Binding TransformManager.ScaleRateX,
                                                             ElementName=RootUserControl}"
                                        ScaleRateY="{Binding TransformManager.ScaleRateY,
-                                                            ElementName=RootUserControl}" />
+                                                            ElementName=RootUserControl}"
+                                       SnapsToDevicePixels="True" />
+        <Grid Canvas.Left="10"
+              Canvas.Top="10"
+              Background="#80001000">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0"
+                       Grid.Column="0"
+                       Margin="4,0,2,0"
+                       Text="Коэффициент масштаба. (AccumulatedScaleFactor)" />
+            <TextBlock Grid.Row="0"
+                       Grid.Column="1"
+                       Margin="2,0,4,0"
+                       HorizontalAlignment="Center"
+                       Text="{Binding TransformManager.AccumulatedScaleFactor,
+                                      ElementName=RootUserControl}" />
+
+            <TextBlock Grid.Row="1"
+                       Grid.Column="0"
+                       Margin="4,0,2,0"
+                       Text="Опорная точка масштабирования. Координата X. (CenterX)" />
+            <TextBlock Grid.Row="1"
+                       Grid.Column="1"
+                       Margin="2,0,4,0"
+                       HorizontalAlignment="Center"
+                       Text="{Binding TransformManager.ScaleCenterX,
+                                      ElementName=RootUserControl}" />
+
+            <TextBlock Grid.Row="2"
+                       Grid.Column="0"
+                       Margin="4,0,2,0"
+                       Text="Опорная точка масштабирования. Координата Y. (CenterY)" />
+            <TextBlock Grid.Row="2"
+                       Grid.Column="1"
+                       Margin="2,0,4,0"
+                       HorizontalAlignment="Center"
+                       Text="{Binding TransformManager.ScaleCenterY,
+                                      ElementName=RootUserControl}" />
+
+            <TextBlock Grid.Row="3"
+                       Grid.Column="0"
+                       Margin="4,0,2,0"
+                       Text="Корректировочное смещение по оси X. (MoveX)" />
+            <TextBlock Grid.Row="3"
+                       Grid.Column="1"
+                       Margin="2,0,4,0"
+                       HorizontalAlignment="Center"
+                       Text="{Binding TransformManager.MoveX,
+                                      ElementName=RootUserControl}" />
+
+            <TextBlock Grid.Row="4"
+                       Grid.Column="0"
+                       Margin="4,0,2,0"
+                       Text="Корректировочное смещение по оси Y. (MoveY)" />
+            <TextBlock Grid.Row="4"
+                       Grid.Column="1"
+                       Margin="2,0,4,0"
+                       HorizontalAlignment="Center"
+                       Text="{Binding TransformManager.MoveY,
+                                      ElementName=RootUserControl}" />
+
+            <TextBlock Grid.Row="5"
+                       Grid.Column="0"
+                       Margin="4,0,2,0"
+                       Text="Позиция координатной плоскости по оси X. (CanvasLeft)" />
+            <TextBlock Grid.Row="5"
+                       Grid.Column="1"
+                       Margin="2,0,4,0"
+                       HorizontalAlignment="Center"
+                       Text="{Binding TransformManager.CanvasLeft,
+                                      ElementName=RootUserControl}" />
+
+            <TextBlock Grid.Row="6"
+                       Grid.Column="0"
+                       Margin="4,0,2,0"
+                       Text="Позиция координатной плоскости по оси Y. (CanvasTop)" />
+            <TextBlock Grid.Row="6"
+                       Grid.Column="1"
+                       Margin="2,0,4,0"
+                       HorizontalAlignment="Center"
+                       Text="{Binding TransformManager.CanvasTop,
+                                      ElementName=RootUserControl}" />
+
+            <TextBlock Grid.Row="7"
+                       Grid.Column="0"
+                       Margin="4,0,2,0"
+                       Text="Актуальная ширина координатной плоскости." />
+            <TextBlock Grid.Row="7"
+                       Grid.Column="1"
+                       Margin="2,0,4,0"
+                       HorizontalAlignment="Center"
+                       Text="{Binding ActualWidth,
+                                      ElementName=_scalableCoordinatePlane}" />
+
+            <TextBlock Grid.Row="8"
+                       Grid.Column="0"
+                       Margin="4,0,2,0"
+                       Text="Актуальная ширина ViewPort." />
+            <TextBlock Grid.Row="8"
+                       Grid.Column="1"
+                       Margin="2,0,4,0"
+                       HorizontalAlignment="Center"
+                       Text="{Binding ActualWidth,
+                                      ElementName=_coordinateViewPort}" />
+
+            <TextBlock Grid.Row="9"
+                       Grid.Column="0"
+                       Margin="4,0,2,0"
+                       Text="Актуальная высота координатной плоскости." />
+            <TextBlock Grid.Row="9"
+                       Grid.Column="1"
+                       Margin="2,0,4,0"
+                       HorizontalAlignment="Center"
+                       Text="{Binding ActualHeight,
+                                      ElementName=_scalableCoordinatePlane}" />
+
+            <TextBlock Grid.Row="10"
+                       Grid.Column="0"
+                       Margin="4,0,2,0"
+                       Text="Актуальная высота ViewPort." />
+            <TextBlock Grid.Row="10"
+                       Grid.Column="1"
+                       Margin="2,0,4,0"
+                       HorizontalAlignment="Center"
+                       Text="{Binding ActualHeight,
+                                      ElementName=_coordinateViewPort}" />
+
+            <TextBlock Grid.Row="11"
+                       Grid.Column="0"
+                       Margin="4,0,2,0"
+                       Text="Максимальная ширина ViewPort." />
+            <TextBlock Grid.Row="11"
+                       Grid.Column="1"
+                       Margin="2,0,4,0"
+                       HorizontalAlignment="Center"
+                       Text="{Binding MaxWidth,
+                                      ElementName=_coordinateViewPort}" />
+
+            <TextBlock Grid.Row="12"
+                       Grid.Column="0"
+                       Margin="4,0,2,0"
+                       Text="Максимальная высота ViewPort." />
+            <TextBlock Grid.Row="12"
+                       Grid.Column="1"
+                       Margin="2,0,4,0"
+                       HorizontalAlignment="Center"
+                       Text="{Binding MaxHeight,
+                                      ElementName=_coordinateViewPort}" />
+        </Grid>
+
     </Canvas>
 </UserControl>
