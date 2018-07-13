@@ -13,7 +13,7 @@ namespace WPF.CTG
         /// <summary>
         /// Минимальный предел множителя масштаба
         /// </summary>
-        private const double MinScaleFactor = 0.3;
+        private const double MinScaleFactor = 0.59;
 
         /// <summary>
         /// Максимальный предел множителя масштаба
