@@ -14,6 +14,6 @@
         </Style>
     </Window.Resources>
     <Grid>
-        <ctg:ScalableCoordinateTimeGrid />
+        <ctg:CoordinateTimeGrid DebugInfoVisibility="Collapsed"/>
     </Grid>
 </Window>
