@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 
 namespace WPF.CTG
 {
@@ -39,6 +38,24 @@ namespace WPF.CTG
             typeof(CoordinateTimeGrid),
             new PropertyMetadata(false, OnIsBlockingScaleYPropertyChange));
 
+        /// <summary>
+        /// Визуальное состояние вертикальной полосы прокрутки.
+        /// </summary>
+        public static readonly DependencyProperty VerticalScrollBarVisibilityProperty = DependencyProperty.Register(
+            nameof(VerticalScrollBarVisibility),
+            typeof(Visibility),
+            typeof(CoordinateTimeGrid),
+            new PropertyMetadata(Visibility.Collapsed, OnVerticalScrollBarVisibilityPropertyChange));
+
+        /// <summary>
+        /// Визуальное состояние горизонтальной полосы прокрутки.
+        /// </summary>
+        public static readonly DependencyProperty HorizontalScrollBarVisibilityProperty = DependencyProperty.Register(
+            nameof(HorizontalScrollBarVisibility),
+            typeof(Visibility),
+            typeof(CoordinateTimeGrid),
+            new PropertyMetadata(Visibility.Collapsed, OnHorizontalScrollBarVisibilityPropertyChange));
+
         #endregion
 
         #region Акцессоры свойств зависимости
@@ -70,6 +87,24 @@ namespace WPF.CTG
             set { SetValue(IsBlockingScaleYProperty, value); }
         }
 
+        /// <summary>
+        /// Визуальное состояние вертикальной полосы прокрутки.
+        /// </summary>
+        public Visibility VerticalScrollBarVisibility
+        {
+            get { return (Visibility)GetValue(VerticalScrollBarVisibilityProperty); }
+            set { SetValue(VerticalScrollBarVisibilityProperty, value); }
+        }
+
+        /// <summary>
+        /// Визуальное состояние горизонтальной полосы прокрутки.
+        /// </summary>
+        public Visibility HorizontalScrollBarVisibility
+        {
+            get { return (Visibility)GetValue(HorizontalScrollBarVisibilityProperty); }
+            set { SetValue(HorizontalScrollBarVisibilityProperty, value); }
+        }
+
         #endregion
 
         #region Свойства
@@ -93,34 +128,6 @@ namespace WPF.CTG
             }
         }
         private TransformManager _transformManager;
-
-        /// <summary>
-        /// Возвращает и устанавливает визуальное состояние вертикальной полосы прокрутки.
-        /// </summary>
-        public Visibility VerticalScrollBarVisibility
-        {
-            get { return _verticalScrollBarVisibility; }
-            set
-            {
-                _verticalScrollBarVisibility = value;
-                OnPropertyChanged(nameof(VerticalScrollBarVisibility));
-            }
-        }
-        private Visibility _verticalScrollBarVisibility = Visibility.Collapsed;
-
-        /// <summary>
-        /// Возвращает и устанавливает визуальное состояние горизонтальной полосы прокрутки.
-        /// </summary>
-        public Visibility HorizontalScrollBarVisibility
-        {
-            get { return _horizontalScrollBarVisibility; }
-            set
-            {
-                _horizontalScrollBarVisibility = value;
-                OnPropertyChanged(nameof(HorizontalScrollBarVisibility));
-            }
-        }
-        private Visibility _horizontalScrollBarVisibility = Visibility.Collapsed;
 
         #endregion
 
@@ -201,6 +208,36 @@ namespace WPF.CTG
             {
                 var tm = obj.TransformManager;
                 tm.IsBlockingScaleY = (bool)e.NewValue;
+            }
+        }
+
+        /// <summary>
+        /// Визуального состояния вертикальной полосы прокрутки.
+        /// </summary>
+        /// <param name="d"></param>
+        /// <param name="e"></param>
+        private static void OnVerticalScrollBarVisibilityPropertyChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var obj = d as CoordinateTimeGrid;
+            if (obj != null)
+            {
+                var vsb = obj._verticalScrollBar;
+                vsb.Visibility = (Visibility)e.NewValue;
+            }
+        }
+
+        /// <summary>
+        /// Визуального состояния горизонтальной полосы прокрутки.
+        /// </summary>
+        /// <param name="d"></param>
+        /// <param name="e"></param>
+        private static void OnHorizontalScrollBarVisibilityPropertyChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var obj = d as CoordinateTimeGrid;
+            if (obj != null)
+            {
+                var hsb = obj._horizontalScrollBar;
+                hsb.Visibility = (Visibility)e.NewValue;
             }
         }
 
