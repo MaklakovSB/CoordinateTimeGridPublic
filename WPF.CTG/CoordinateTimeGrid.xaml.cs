@@ -21,6 +21,24 @@ namespace WPF.CTG
             typeof(CoordinateTimeGrid),
             new PropertyMetadata(Visibility.Collapsed, OnDebugInfoVisibilityPropertyChange));
 
+        /// <summary>
+        /// Блокировать масштабирование по оси X.
+        /// </summary>
+        public static readonly DependencyProperty IsBlockingScaleXProperty = DependencyProperty.Register(
+            nameof(IsBlockingScaleX),
+            typeof(bool),
+            typeof(CoordinateTimeGrid),
+            new PropertyMetadata(false, OnIsBlockingScaleXPropertyChange));
+
+        /// <summary>
+        /// Блокировать масштабирование по оси Y.
+        /// </summary>
+        public static readonly DependencyProperty IsBlockingScaleYProperty = DependencyProperty.Register(
+            nameof(IsBlockingScaleY),
+            typeof(bool),
+            typeof(CoordinateTimeGrid),
+            new PropertyMetadata(false, OnIsBlockingScaleYPropertyChange));
+
         #endregion
 
         #region Акцессоры свойств зависимости
@@ -32,6 +50,24 @@ namespace WPF.CTG
         {
             get { return (Visibility)GetValue(DebugInfoVisibilityProperty); }
             set { SetValue(DebugInfoVisibilityProperty, value); }
+        }
+
+        /// <summary>
+        /// Блокировать масштабирование по оси X.
+        /// </summary>
+        public bool IsBlockingScaleX
+        {
+            get { return (bool)GetValue(IsBlockingScaleXProperty); }
+            set { SetValue(IsBlockingScaleXProperty, value); }
+        }
+
+        /// <summary>
+        /// Блокировать масштабирование по оси Y.
+        /// </summary>
+        public bool IsBlockingScaleY
+        {
+            get { return (bool)GetValue(IsBlockingScaleYProperty); }
+            set { SetValue(IsBlockingScaleYProperty, value); }
         }
 
         #endregion
@@ -135,6 +171,36 @@ namespace WPF.CTG
             {
                 var div = obj._debugInfo.Visibility;
                 div = (Visibility)e.NewValue;
+            }
+        }
+
+        /// <summary>
+        /// Изменение визуального состояния элемента отображения отладочной информации.
+        /// </summary>
+        /// <param name="d"></param>
+        /// <param name="e"></param>
+        private static void OnIsBlockingScaleXPropertyChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var obj = d as CoordinateTimeGrid;
+            if (obj != null)
+            {
+                var tm = obj.TransformManager;
+                tm.IsBlockingScaleX = (bool)e.NewValue;
+            }
+        }
+
+        /// <summary>
+        /// Изменение визуального состояния элемента отображения отладочной информации.
+        /// </summary>
+        /// <param name="d"></param>
+        /// <param name="e"></param>
+        private static void OnIsBlockingScaleYPropertyChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var obj = d as CoordinateTimeGrid;
+            if (obj != null)
+            {
+                var tm = obj.TransformManager;
+                tm.IsBlockingScaleY = (bool)e.NewValue;
             }
         }
 

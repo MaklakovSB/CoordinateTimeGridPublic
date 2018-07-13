@@ -172,6 +172,16 @@ namespace WPF.CTG
         }
         private double _scaleRateY = 1.0;
 
+        /// <summary>
+        /// Блокировать масштабирование по оси X.
+        /// </summary>
+        public bool IsBlockingScaleX { get; set; }
+
+        /// <summary>
+        /// Блокировать масштабирование по оси Y.
+        /// </summary>
+        public bool IsBlockingScaleY { get; set; }
+
         #endregion
 
         #region * Конструктор
@@ -508,8 +518,12 @@ namespace WPF.CTG
 
                 // Рсчёт масштаба.
                 _scalingRateStep = scalingRateStep;
-                ScaleRateX *= _scalingRateStep;
-                ScaleRateY *= _scalingRateStep;
+
+                if(!IsBlockingScaleX)
+                    ScaleRateX *= _scalingRateStep;
+
+                if(!IsBlockingScaleY)
+                    ScaleRateY *= _scalingRateStep;
 
                 // Дело в том что положение мыши меняется во время преобразования относительно канваса.
                 // И следующий шаг прокрутки колеса по инерции происходит с опорной точкой которая оказывается за 
