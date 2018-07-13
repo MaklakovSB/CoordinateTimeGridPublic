@@ -1,7 +1,5 @@
 ﻿using System.ComponentModel;
 using System.Windows;
-using System.Windows.Media;
-using WPF.CTG;
 
 namespace СoordinateTimeGridSample
 {
