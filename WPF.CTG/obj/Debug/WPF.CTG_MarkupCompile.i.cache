@@ -10,11 +10,11 @@ none
 false
 DEBUG;TRACE
 
-2-158059691
+2-1896918958
 
-11-1309408618
+11-1833768025
 11-983390342
-ScalableCoordinatePlane.xaml;ScalableCoordinateTimeGrid.xaml;
+ScalableCoordinatePlane.xaml;CoordinateTimeGrid.xaml;
 
-False
+True
 

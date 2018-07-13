@@ -47,8 +47,8 @@
     </Compile>
     <Compile Include="ExtremePoints.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ScalableCoordinateTimeGrid.xaml.cs">
-      <DependentUpon>ScalableCoordinateTimeGrid.xaml</DependentUpon>
+    <Compile Include="CoordinateTimeGrid.xaml.cs">
+      <DependentUpon>CoordinateTimeGrid.xaml</DependentUpon>
     </Compile>
     <Compile Include="TimeMark.cs" />
     <Compile Include="TransformManager.cs" />
@@ -62,7 +62,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ScalableCoordinateTimeGrid.xaml">
+    <Page Include="CoordinateTimeGrid.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

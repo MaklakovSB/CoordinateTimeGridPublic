@@ -8,6 +8,6 @@ C:\Work\СoordinateTimeGridSample\WPF.CTG\obj\Debug\ScalableCoordinatePlane.baml
 C:\Work\СoordinateTimeGridSample\WPF.CTG\obj\Debug\WPF.CTG.g.resources
 C:\Work\СoordinateTimeGridSample\WPF.CTG\obj\Debug\WPF.CTG.dll
 C:\Work\СoordinateTimeGridSample\WPF.CTG\obj\Debug\WPF.CTG.pdb
-C:\Work\СoordinateTimeGridSample\WPF.CTG\obj\Debug\ScalableCoordinateTimeGrid.g.cs
-C:\Work\СoordinateTimeGridSample\WPF.CTG\obj\Debug\ScalableCoordinateTimeGrid.baml
+C:\Work\СoordinateTimeGridSample\WPF.CTG\obj\Debug\CoordinateTimeGrid.g.cs
+C:\Work\СoordinateTimeGridSample\WPF.CTG\obj\Debug\CoordinateTimeGrid.baml
 C:\Work\СoordinateTimeGridSample\WPF.CTG\obj\Debug\WPF.CTG.csprojResolveAssemblyReference.cache
