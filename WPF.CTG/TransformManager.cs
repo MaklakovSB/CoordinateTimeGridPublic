@@ -1,5 +1,4 @@
 ﻿using System;
-using System.CodeDom;
 using System.Windows;
 using System.Windows.Controls;
 using System.ComponentModel;
@@ -173,26 +172,6 @@ namespace WPF.CTG
         }
         private double _scaleRateY = 1.0;
 
-        /// <summary>
-        /// Общий накапливаемый коэффициент масштаба.
-        /// </summary>
-        public double AccumulatedScaleFactor
-        {
-            get { return _accumulatedScaleFactor; }
-            set
-            {
-                if(value > MaxScaleFactor )
-                    value = MaxScaleFactor;
-
-                if (value < MinScaleFactor)
-                    value = MinScaleFactor;
-
-                _accumulatedScaleFactor = value;
-                OnPropertyChanged(nameof(AccumulatedScaleFactor));
-            }
-        }
-        private double _accumulatedScaleFactor = 1;
-
         #endregion
 
         #region * Конструктор
@@ -278,13 +257,9 @@ namespace WPF.CTG
                 // Получим текущее положение мыши
                 Point cursorpos = Mouse.GetPosition(element);
 
-                // Находим дельты сдвига мыши отностительно точки захвата
-                double deltaX = cursorpos.X - _dragStart.Value.X;
-                double deltaY = cursorpos.Y - _dragStart.Value.Y;
-
-                // Получаем координаты нового положения холста
-                var canvasLeft = CanvasLeft + deltaX * AccumulatedScaleFactor;
-                var canvasTop = CanvasTop + deltaY * AccumulatedScaleFactor;
+                // Находим дельты сдвига мыши отностительно точки захвата.
+                var deltaX = cursorpos.X - _dragStart.Value.X;
+                var deltaY = cursorpos.Y - _dragStart.Value.Y;
 
                 // Получаем верхние левые крайние точки внутреннего и внешнего холста
                 // для контроля верхней и левой границы.
@@ -296,74 +271,54 @@ namespace WPF.CTG
                 var ptsPMax = _coordinateViewPort.PointToScreen(new Point() { X = _coordinateViewPort.ActualWidth, Y = _coordinateViewPort.ActualHeight });
                 var ptsCMax = _scalableCoordinatePlane.PointToScreen(new Point() { X = _scalableCoordinatePlane.ActualWidth, Y = _scalableCoordinatePlane.ActualHeight });
 
-                if (deltaX > 0) // Смещение вправо
+                // Получим положительные допустимые смещения.
+                var maxOffsetToRight = ptsPMin.X + 1 - ptsCMin.X;
+                var maxOffsetToDown = ptsPMin.Y + 1 - ptsCMin.Y;
+                var maxOffsetToLeft = ptsCMax.X - ptsPMax.X + 1;
+                var maxOffsetToUp = ptsCMax.Y - ptsPMax.Y + 1;
+
+                // Смещение вправо
+                if (deltaX > 0 && maxOffsetToRight > 0)
                 {
-                    var scrDeltaX = ptsPMin.X - ptsCMin.X;
-                    if (scrDeltaX > 0)
+                    if (deltaX > maxOffsetToRight)
                     {
-                        if (scrDeltaX >= Math.Abs(deltaX))
-                        {
-                            CanvasLeft = canvasLeft;
-                        }
-                        else // Если дельта по модулю больше допустимой
-                        {
-                            deltaX = scrDeltaX;
-                            canvasLeft = CanvasLeft + deltaX * AccumulatedScaleFactor;
-                            CanvasLeft = canvasLeft;
-                        }
+                        deltaX = maxOffsetToRight;
                     }
+
+                    CanvasLeft = CanvasLeft + deltaX;
                 }
-                else if (deltaX < 0) // Смещение влево
+                else
+                // Смещение влево
+                if (deltaX < 0 && maxOffsetToLeft > 0)
                 {
-                    var scrDeltaX = ptsCMax.X - ptsPMax.X;
-                    if (scrDeltaX > 0)
+                    if (Math.Abs(deltaX) > maxOffsetToLeft)
                     {
-                        if (scrDeltaX >= Math.Abs(deltaX))
-                        {
-                            CanvasLeft = canvasLeft;
-                        }
-                        else // Если дельта по модулю больше допустимой
-                        {
-                            deltaX = scrDeltaX * -1;
-                            canvasLeft = CanvasLeft + deltaX * AccumulatedScaleFactor;
-                            CanvasLeft = canvasLeft;
-                        }
+                        deltaX = maxOffsetToLeft * -1;
                     }
+
+                    CanvasLeft = CanvasLeft + deltaX;
                 }
 
-                if (deltaY > 0) // Смещение вниз
+                // Смещение вниз
+                if (deltaY > 0 && maxOffsetToDown > 0)
                 {
-                    var scrDeltaY = ptsPMin.Y - ptsCMin.Y;
-                    if (scrDeltaY > 0)
+                    if (deltaY > maxOffsetToDown)
                     {
-                        if (scrDeltaY >= Math.Abs(deltaY))
-                        {
-                            CanvasTop = canvasTop;
-                        }
-                        else // Если дельта по модулю больше допустимой
-                        {
-                            deltaY = scrDeltaY;
-                            canvasTop = CanvasTop + deltaY * AccumulatedScaleFactor;
-                            CanvasTop = canvasTop;
-                        }
+                        deltaY = maxOffsetToDown;
                     }
+
+                    CanvasTop = CanvasTop + deltaY;
                 }
-                else if (deltaY < 0) // Смещение вверх
+                else
+                // Смещение вверх
+                if (deltaY < 0 && maxOffsetToUp > 0)
                 {
-                    var scrDeltaY = ptsCMax.Y - ptsPMax.Y;
-                    if (scrDeltaY > 0)
+                    if (Math.Abs(deltaY) > maxOffsetToUp)
                     {
-                        if (scrDeltaY >= Math.Abs(deltaY))
-                        {
-                            CanvasTop = canvasTop;
-                        }
-                        else // Если дельта по модулю больше допустимой
-                        {
-                            deltaY = scrDeltaY * -1;
-                            canvasTop = CanvasTop + deltaY * AccumulatedScaleFactor;
-                            CanvasTop = canvasTop;
-                        }
+                        deltaY = maxOffsetToUp * -1;
                     }
+
+                    CanvasTop = CanvasTop + deltaY;
                 }
             }
         }
@@ -379,17 +334,19 @@ namespace WPF.CTG
             if (elementCanvas == null)
                 return;
 
-            // Получим дельту
+            // Получим дельту.
             var delta = e.Delta;
 
             // Ограничение масштаба.
             // Если уже применённый коэффициент масштаба больше или равен максимальному при положительной дельте либо
-            // если уже применённый коэффициент масштаба меньше или равен минимальному при отрицательной дельте.
-            if ((AccumulatedScaleFactor >= MaxScaleFactor && delta > 0)
-                || (AccumulatedScaleFactor <= MinScaleFactor && delta < 0))
+            // если уже применённый коэффициент масштаба меньше или равен минимальному при отрицательной дельте, то отлуп.
+            if (((ScaleRateX >= MaxScaleFactor && delta > 0)
+                || (ScaleRateX <= MinScaleFactor && delta < 0)) 
+                || ((ScaleRateY >= MaxScaleFactor && delta > 0)
+                || (ScaleRateY <= MinScaleFactor && delta < 0)))
                 return;
 
-            // Получим шаг масштабирования в зависимости от дельты
+            // Получим предстоящий шаг масштабирования в зависимости от дельты.
             var scalingRateStep = GetScalingRateStep(delta);
 
             // Получим показатель уменьшения масштаба.
@@ -399,7 +356,8 @@ namespace WPF.CTG
             // ViewPort'а либо по ширине либо по высоте.
             if (decreaseScale)
             {
-                // Получим ширины и высоты ViewPort'а и координатной плоскости с учётом масштаба.
+                // Получим ширины и высоты ViewPort'а и координатной плоскости с учётом текущего 
+                // масштаба и предстоящего шага масштабирования.
                 var widthPlane = _scalableCoordinatePlane.ActualWidth * ScaleRateX * scalingRateStep;
                 var heightPlane = _scalableCoordinatePlane.ActualHeight * ScaleRateY * scalingRateStep;
                 var widthViewPort = _coordinateViewPort.ActualWidth;
@@ -409,12 +367,14 @@ namespace WPF.CTG
                 var differenceWidth = widthPlane - widthViewPort;
                 var differenceHeight = heightPlane - heightViewPort;
 
-                // Если разница менше чем -2, то образуется брешь и нужно скорретировать новый шаг масштаба.
-
+                // Если разница менше чем -2, то это наш случай - координатная плоскость при следующем шаге
+                // масштабирования станет меньше чем ViewPort и нужно скорретировать предстоящий шаг масштаба.
                 if (differenceWidth < -2 || differenceHeight < -2)
                 {
                     var correctedScalingRateStep = 0.0;
 
+                    // Будем ориентироваться на ту ось, по которой размер координатной плоскости меньше.
+                    // Если widthViewPort это ширина вьюпорта, то "widthViewPort - 2" - ширина его внутренней области.
                     if (differenceWidth < differenceHeight)
                     {
                         correctedScalingRateStep = (widthViewPort - 2) / widthPlane;
@@ -424,34 +384,16 @@ namespace WPF.CTG
                         correctedScalingRateStep = (heightViewPort - 2) / heightPlane;
                     }
 
+                    // Корректируем шаг масштаба.
                     scalingRateStep *= correctedScalingRateStep;
                 }
-
             }
 
-            ////// Получаем контрольные точки.
-            ////var extremePoints = GetCanvasControlPoints();
-            ////
-            ////// Условия нарушение границ
-            ////var left = extremePoints.ExternalCanvasMinimum.X <= extremePoints.InternalCanvasMinimum.X;
-            ////var top = extremePoints.ExternalCanvasMinimum.Y <= extremePoints.InternalCanvasMinimum.Y;
-            ////var right = extremePoints.ExternalCanvasMaximum.X >= extremePoints.InternalCanvasMaximum.X;
-            ////var bottom = extremePoints.ExternalCanvasMaximum.Y >= extremePoints.InternalCanvasMaximum.Y;
-            ////
-            ////// Отсечём варинты нарушения противоположных границ
-            ////// при попытке уменьшения масштаба. Это признак предела
-            ////// адеватного масштабирования.
-            ////if ((left && right && decreaseScale) || (top && bottom && decreaseScale))
-            ////    return;
-
+            // Расчёт и применение масштаба.
             ScalePlane(scalingRateStep);
 
             // Компенсационное смещение координатной плоскости в случае если образовалась брешь.
-            CompensationOffset();
-            //CompensationScale();
-            //CompensationOffset();
-
-
+            CompensationMove();
         }
 
         /// <summary>
@@ -465,8 +407,51 @@ namespace WPF.CTG
             if (elementCanvas == null)
                 return;
 
-            //CompensationScale();
+            // Если растянули ViewPort, то координатная плоскость могла
+            // стать меньше чем ViewPort.Поэтому нужно сравнить размеры ViewPort'а с размерами
+            // координатной плоскости с учётом текущего масштаба. И если координатная плоскость - меньше, то
+            // высчитать недостающий масштаб и применить его, а потом сделать компенсационный сдвиг. Если же
+            // координатная плоскость не меньше ViewPort'а, то просто сделать компенсационный сдвиг - достаточно.
 
+            var scalingRateStep = 1.0;
+
+            // Получим ширины и высоты ViewPort'а и координатной плоскости с учётом текущего 
+            // масштаба и предстоящего шага масштабирования.
+            var widthPlane = _scalableCoordinatePlane.ActualWidth * ScaleRateX;
+            var heightPlane = _scalableCoordinatePlane.ActualHeight * ScaleRateY;
+            var widthViewPort = _coordinateViewPort.ActualWidth;
+            var heightViewPort = _coordinateViewPort.ActualHeight;
+
+            // Получим разницу размеров между внутренним и внешним контролом.
+            var differenceWidth = widthPlane - widthViewPort;
+            var differenceHeight = heightPlane - heightViewPort;
+
+            // Если разница менше чем -2, то это наш случай - координатная плоскость меньше чем ViewPort 
+            // и нужно масштабировать её.
+            if (differenceWidth < -2 || differenceHeight < -2)
+            {
+                var correctedScalingRateStep = 0.0;
+
+                // Будем ориентироваться на ту ось, по которой размер координатной плоскости меньше.
+                // Если widthViewPort это ширина вьюпорта, то "widthViewPort - 2" - ширина его внутренней области.
+                if (differenceWidth < differenceHeight)
+                {
+                    correctedScalingRateStep = (widthViewPort - 2) / widthPlane;
+                }
+                else
+                {
+                    correctedScalingRateStep = (heightViewPort - 2) / heightPlane;
+                }
+
+                // Корректируем шаг масштаба.
+                scalingRateStep *= correctedScalingRateStep;
+
+                // Применить масштаб.
+                ScalePlane(scalingRateStep);
+            }
+
+            // Компенсационное смещение координатной плоскости в случае если образовалась брешь.
+            CompensationMove();
         }
 
         #endregion
@@ -485,10 +470,10 @@ namespace WPF.CTG
         private double GetScalingRateStep(int delta)
         {
             if (delta > 0)
-                return 1.05;
+                return 1.04;
 
             if (delta < 0)
-                return 0.95;
+                return 0.96;
 
             return _scalingRateStep = 1.0;
         }
@@ -513,19 +498,18 @@ namespace WPF.CTG
         /// </summary>
         private void ScalePlane(double scalingRateStep, double? scaleCenterX = null, double? scaleCenterY = null)
         {
-            // Если дельта равна нулю то множитель масштаба равен единице
+            // Если дельта равна нулю то множитель масштаба равен единице.
             if (scalingRateStep != 1)
             {
-                // Получаем точку положения курсора мыши и устанавливаем её как опорную для масштабирования канваса
+                // Получаем точку положения курсора мыши и устанавливаем её как опорную для масштабирования канваса.
                 var position = Mouse.GetPosition(_scalableCoordinatePlane);
                 ScaleCenterX = scaleCenterX ?? position.X;
                 ScaleCenterY = scaleCenterY ?? position.Y;
 
-                // Рсчёт масштаба
+                // Рсчёт масштаба.
                 _scalingRateStep = scalingRateStep;
                 ScaleRateX *= _scalingRateStep;
                 ScaleRateY *= _scalingRateStep;
-                AccumulatedScaleFactor *= _scalingRateStep;
 
                 // Дело в том что положение мыши меняется во время преобразования относительно канваса.
                 // И следующий шаг прокрутки колеса по инерции происходит с опорной точкой которая оказывается за 
@@ -535,77 +519,16 @@ namespace WPF.CTG
                 var discrepancyX = (scaleCenterX ?? cursorpos.X) - position.X;
                 var discrepancyY = (scaleCenterY ?? cursorpos.Y) - position.Y;
 
-                // Компенсируем сдвиг канваса после масштабирования
+                // Компенсируем сдвиг канваса после масштабирования.
                 MoveX += discrepancyX;
                 MoveY += discrepancyY;
             }
         }
 
         /// <summary>
-        /// 
-        /// </summary>
-        private void CompensationScale()
-        {
-            // Получим реальный размер координатной плоскости с учётом масштаба.
-            var planeHeight = _scalableCoordinatePlane.ActualHeight * AccumulatedScaleFactor;
-            var planeWidth = _scalableCoordinatePlane.ActualWidth * AccumulatedScaleFactor;
-
-            // Определим условия нарушения границ - образования бреши из-за маленького масштаба.
-            var breachHeight = planeHeight < _coordinateViewPort.ActualHeight;
-            var breachWidth = planeWidth < _coordinateViewPort.ActualWidth;
-
-            double deltaHeight = 0;
-            double deltaWidth = 0;
-
-            // Если есть брешь из-за маленького масштаба
-            if (breachHeight || breachWidth)
-            {
-                double factorH = 0;
-                double factorW = 0;
-
-                // Если есть брешь по высоте.
-                if (breachHeight)
-                {
-                    // Получим высоту бреши как дельту для компенсационного масштабирования.
-                    deltaHeight = _coordinateViewPort.ActualHeight - planeHeight;
-                    factorH = _coordinateViewPort.ActualHeight / planeHeight;
-                }
-
-                // Если есть брешь по ширине.
-                if (breachWidth)
-                {
-                    // Получим ширину бреши как дельту для компенсационного масштабирования.
-                    deltaWidth = _coordinateViewPort.ActualWidth - planeWidth;
-                    factorW = _coordinateViewPort.ActualWidth / planeWidth;
-                }
-
-                
-
-
-                // Получим большую дельту.
-                //var delta = deltaHeight > deltaWidth ? deltaHeight : deltaWidth;
-
-
-                var MaxFactor = factorH > factorW ? factorH : factorW;
-                if (MaxFactor != 0)
-                {
-                    // Компенсируем брешь увеличением масштаба.
-                    ScalePlane(MaxFactor,
-                        (_scalableCoordinatePlane.ActualHeight * AccumulatedScaleFactor) / 2,
-                        (_scalableCoordinatePlane.ActualWidth * AccumulatedScaleFactor) / 2);
-                }
-            }
-            //else
-            //{
-            //    // Компенсируем брешь смещением координатной плоскости.
-            //    CompensationOffset();
-            //}
-        }
-
-        /// <summary>
         /// Компенсационное смещение координатной плоскости в случае если образовалась брешь.
         /// </summary>
-        private void CompensationOffset()
+        private void CompensationMove()
         {
             // Получаем контрольные точки.
             var extremePoints = GetCanvasControlPoints();
@@ -619,23 +542,23 @@ namespace WPF.CTG
             if (left)
             {
                 MoveX += (extremePoints.InternalCanvasMinimum.X - (extremePoints.ExternalCanvasMinimum.X + 1)) /
-                         AccumulatedScaleFactor * -1;
+                         ScaleRateX * -1;
             }
             else if (right)
             {
                 MoveX += (extremePoints.InternalCanvasMaximum.X - (extremePoints.ExternalCanvasMaximum.X -1)) /
-                         AccumulatedScaleFactor * -1;
+                         ScaleRateX * -1;
             }
 
             if (top)
             {
                 MoveY += (extremePoints.InternalCanvasMinimum.Y - (extremePoints.ExternalCanvasMinimum.Y + 1)) /
-                         AccumulatedScaleFactor * -1;
+                         ScaleRateY * -1;
             }
             else if (bottom)
             {
                 MoveY += (extremePoints.InternalCanvasMaximum.Y - (extremePoints.ExternalCanvasMaximum.Y -1)) /
-                         AccumulatedScaleFactor * -1;
+                         ScaleRateY * -1;
             }
         }
 
