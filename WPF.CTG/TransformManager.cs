@@ -148,6 +148,7 @@ namespace WPF.CTG
 
                 _scaleRateX = value;
                 OnPropertyChanged(nameof(ScaleRateX));
+                OnPropertyChanged(nameof(HeightWithScaling));
             }
         }
         private double _scaleRateX = 1.0;
@@ -168,6 +169,7 @@ namespace WPF.CTG
 
                 _scaleRateY = value;
                 OnPropertyChanged(nameof(ScaleRateY));
+                OnPropertyChanged(nameof(WidthWithScaling));
             }
         }
         private double _scaleRateY = 1.0;
@@ -181,6 +183,16 @@ namespace WPF.CTG
         /// Блокировать масштабирование по оси Y.
         /// </summary>
         public bool IsBlockingScaleY { get; set; }
+
+        /// <summary>
+        /// Ширина координатной плоскости с учётом масштаба.
+        /// </summary>
+        public double WidthWithScaling => _scalableCoordinatePlane.Width * ScaleRateX;
+
+        /// <summary>
+        /// Высота координатной плоскости с учётом масштаба.
+        /// </summary>
+        public double HeightWithScaling => _scalableCoordinatePlane.Height * ScaleRateY;
 
         #endregion
 
@@ -212,6 +224,9 @@ namespace WPF.CTG
             _scalableCoordinatePlane.MouseUp += mouseUp;
             _scalableCoordinatePlane.MouseMove += mouseMove;
             _scalableCoordinatePlane.MouseWheel += mouseWheel;
+
+            OnPropertyChanged(nameof(WidthWithScaling));
+            OnPropertyChanged(nameof(HeightWithScaling));
         }
 
         #endregion
