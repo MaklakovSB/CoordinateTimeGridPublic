@@ -14,6 +14,6 @@
         </Style>
     </Window.Resources>
     <Grid>
-        <ctg:CoordinateTimeGrid DebugInfoVisibility="Collapsed"/>
+        <ctg:CoordinateTimeGrid DebugInfoVisibility="Visible" />
     </Grid>
 </Window>
