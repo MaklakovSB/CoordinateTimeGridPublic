@@ -1,6 +1,7 @@
 ﻿<UserControl x:Class="WPF.CTG.CoordinateTimeGrid"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="clr-namespace:WPF.CTG.Converters"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:WPF.CTG"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -8,17 +9,20 @@
              d:DesignHeight="300"
              d:DesignWidth="600"
              mc:Ignorable="d">
-    <UserControl.Resources />
+    <UserControl.Resources>
+        <converters:DoubleInvertSignConverter x:Key="disc" />
+        <converters:WidthToMaxConverter x:Key="wtmc" />
+    </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
 
         <Canvas x:Name="_coordinateViewPort"
@@ -27,13 +31,13 @@
                 Background="Black"
                 ClipToBounds="True"
                 SnapsToDevicePixels="True">
-
+            
             <local:ScalableCoordinatePlane x:Name="_scalableCoordinatePlane"
                                            Canvas.Left="{Binding TransformManager.CanvasLeft,
                                                                  ElementName=RootUserControl}"
                                            Canvas.Top="{Binding TransformManager.CanvasTop,
                                                                 ElementName=RootUserControl}"
-                                           Width="12000"
+                                           Width="120000"
                                            Height="8000"
                                            GridColor="White"
                                            MoveX="{Binding TransformManager.MoveX,
@@ -55,6 +59,16 @@
                            Width="100"
                            Height="20"
                            Fill="#80ffff55" />
+
+                <Rectangle Canvas.Left="20"
+                           Canvas.Top="400"
+                           Width="100"
+                           Height="20"
+                           Fill="#80ffff55" />
+                <Grid Canvas.Left="20"
+                      Canvas.Top="400">
+                    
+                </Grid>
 
             </local:ScalableCoordinatePlane>
 
@@ -222,33 +236,64 @@
                            Text="{Binding ActualHeight,
                                           ElementName=_coordinateViewPort}" />
 
-                <!--<TextBlock Grid.Row="12"
+                <TextBlock Grid.Row="12"
                            Grid.Column="0"
                            Margin="4,0,2,0"
-                           Text="Максимальная ширина ViewPort." />
+                           Text="horizontalScrollBar Maximum." />
                 <TextBlock Grid.Row="12"
                            Grid.Column="1"
                            Margin="2,0,4,0"
                            HorizontalAlignment="Center"
-                           Text="{Binding MaxWidth,
-                                          ElementName=_coordinateViewPort}" />
-
-                <TextBlock Grid.Row="13"
-                           Grid.Column="0"
-                           Margin="4,0,2,0"
-                           Text="Максимальная высота ViewPort." />
-                <TextBlock Grid.Row="13"
-                           Grid.Column="1"
-                           Margin="2,0,4,0"
-                           HorizontalAlignment="Center"
-                           Text="{Binding MaxHeight,
-                                          ElementName=_coordinateViewPort}" />-->
+                           Text="{Binding Maximum,
+                                          ElementName=_horizontalScrollBar}" />
             </Grid>
 
         </Canvas>
 
-        <ScrollBar Grid.Row="1" Grid.Column="2" Orientation="Vertical" x:Name="_verticalScrollBar" Visibility="{Binding VerticalScrollBarVisibility, ElementName=RootUserControl}"/>
-        <ScrollBar Grid.Row="2" Grid.Column="1" Orientation="Horizontal" x:Name="_horizontalScrollBar" Visibility="{Binding HorizontalScrollBarVisibility, ElementName=RootUserControl}"/>
-        
+        <ScrollBar x:Name="_verticalScrollBar"
+                   Grid.Row="1"
+                   Grid.Column="2"
+                   Orientation="Vertical"
+                   Visibility="{Binding VerticalScrollBarVisibility,
+                                        ElementName=RootUserControl}" />
+        <ScrollBar x:Name="_horizontalScrollBar"
+                   Grid.Row="2"
+                   Grid.Column="1"
+                   Orientation="Horizontal"
+                   
+                   
+                   
+                   Value="{Binding TransformManager.CanvasLeft,
+                            ElementName=RootUserControl,
+                            Converter={StaticResource disc}}"
+                   
+                   ViewportSize="{Binding ActualWidth, ElementName=_coordinateViewPort}" SmallChange="1">
+            <ScrollBar.Maximum>
+                <MultiBinding Converter="{StaticResource wtmc}">
+                    <Binding ElementName="RootUserControl" Path="TransformManager.WidthWithScaling"/>
+                    <Binding ElementName="RootUserControl" Path="TransformManager.RealWidth"/>
+                </MultiBinding>
+            </ScrollBar.Maximum>
+            
+        </ScrollBar>
+
+        <!--Maximum="{Binding ActualWidth, ElementName=_coordinateViewPort, Converter={StaticResource wtmc}, ConverterParameter=TransformManager}"-->
+
+        <!--  Maximum="{Binding TransformManager.MaximumWidthScroll, ElementName=RootUserControl}"  -->
+        <!--Maximum="{Binding Path=TransformManager.MaximumWidthScroll,
+        Converter={StaticResource wtmc},
+        ConverterParameter=TransformManager}"-->
+
+        <!--Maximum="{Binding Path=TransformManager.MaximumWidthScroll,
+        Converter={StaticResource wtmc},
+        ConverterParameter=TransformManager}"-->
+
+        <!--ViewportSize="{Binding ActualWidth, ElementName=_coordinateViewPort}"
+        Visibility="{Binding HorizontalScrollBarVisibility,
+        ElementName=RootUserControl}"
+        Value="{Binding TransformManager.CanvasLeft,
+        ElementName=RootUserControl,
+        Converter={StaticResource disc}}"-->
+
     </Grid>
 </UserControl>
