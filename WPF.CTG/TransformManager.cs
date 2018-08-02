@@ -6,7 +6,7 @@ using System.Windows.Input;
 
 namespace WPF.CTG
 {
-    public class TransformManager: INotifyPropertyChanged
+    public class TransformManager : DependencyObject, INotifyPropertyChanged
     {
         #region Константы
 
@@ -36,12 +36,25 @@ namespace WPF.CTG
 
         #endregion
 
+        public static DependencyProperty RealWidthProperty =
+            DependencyProperty.Register("RealWidth", typeof(double),
+                typeof(TransformManager),
+                new PropertyMetadata(0.0));
+
+        public double RealWidth
+        {
+            get { return (double)GetValue(RealWidthProperty); }
+            set { SetValue(RealWidthProperty, value); }
+        }
+
         #region Свойства
 
         /// <summary>
         /// Ссылка на родительский канвас-рамку
         /// </summary>
         private Canvas _coordinateViewPort;
+
+        //private CanvasViewPort _coordinateViewPort;
 
         /// <summary>
         /// Ссылка на координатную плоскость
@@ -227,6 +240,9 @@ namespace WPF.CTG
 
             OnPropertyChanged(nameof(WidthWithScaling));
             OnPropertyChanged(nameof(HeightWithScaling));
+
+            //OnPropertyChanged(nameof(_coordinateViewPort.ActualWidth));
+            //OnPropertyChanged(nameof(MaximumWidthScroll));
         }
 
         #endregion
@@ -280,11 +296,15 @@ namespace WPF.CTG
                     return;
 
                 // Получим текущее положение мыши
-                Point cursorpos = Mouse.GetPosition(element);
+                Point currentPosition = Mouse.GetPosition(element);
 
                 // Находим дельты сдвига мыши отностительно точки захвата.
-                var deltaX = cursorpos.X - _dragStart.Value.X;
-                var deltaY = cursorpos.Y - _dragStart.Value.Y;
+                var deltaX = currentPosition.X - _dragStart.Value.X;
+                var deltaY = currentPosition.Y - _dragStart.Value.Y;
+
+                deltaX = deltaX / ScaleRateX;
+                deltaY = deltaY / ScaleRateY;
+
 
                 // Получаем верхние левые крайние точки внутреннего и внешнего холста
                 // для контроля верхней и левой границы.
@@ -297,10 +317,10 @@ namespace WPF.CTG
                 var ptsCMax = _scalableCoordinatePlane.PointToScreen(new Point() { X = _scalableCoordinatePlane.ActualWidth, Y = _scalableCoordinatePlane.ActualHeight });
 
                 // Получим положительные допустимые смещения.
-                var maxOffsetToRight = ptsPMin.X + 1 - ptsCMin.X;
-                var maxOffsetToDown = ptsPMin.Y + 1 - ptsCMin.Y;
-                var maxOffsetToLeft = ptsCMax.X - ptsPMax.X + 1;
-                var maxOffsetToUp = ptsCMax.Y - ptsPMax.Y + 1;
+                var maxOffsetToRight = (ptsPMin.X + 1 - ptsCMin.X);
+                var maxOffsetToDown = (ptsPMin.Y + 1 - ptsCMin.Y);
+                var maxOffsetToLeft = (ptsCMax.X - ptsPMax.X + 1);
+                var maxOffsetToUp = (ptsCMax.Y - ptsPMax.Y + 1);
 
                 // Смещение вправо
                 if (deltaX > 0 && maxOffsetToRight > 0)
@@ -358,6 +378,7 @@ namespace WPF.CTG
             var elementCanvas = sender as Canvas;
             if (elementCanvas == null)
                 return;
+            OnPropertyChanged(nameof(WidthWithScaling));
 
             // Получим дельту.
             var delta = e.Delta;
@@ -431,6 +452,8 @@ namespace WPF.CTG
             var elementCanvas = sender as Canvas;
             if (elementCanvas == null)
                 return;
+
+            RealWidth = e.NewSize.Width;
 
             // Если растянули ViewPort, то координатная плоскость могла
             // стать меньше чем ViewPort.Поэтому нужно сравнить размеры ViewPort'а с размерами
