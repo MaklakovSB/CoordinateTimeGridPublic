@@ -1,6 +1,8 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Threading;
 
 namespace WPF.CTG
 {
@@ -137,6 +139,7 @@ namespace WPF.CTG
         {
             DataContext = this;
             InitializeComponent();
+
             TransformManager.TransformInit(_coordinateViewPort, _scalableCoordinatePlane);
 
             //// Перенесено в XAML.
