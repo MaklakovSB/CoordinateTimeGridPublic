@@ -31,44 +31,52 @@
                 Background="Black"
                 ClipToBounds="True"
                 SnapsToDevicePixels="True">
-            
+
             <local:ScalableCoordinatePlane x:Name="_scalableCoordinatePlane"
                                            Canvas.Left="{Binding TransformManager.CanvasLeft,
                                                                  ElementName=RootUserControl}"
                                            Canvas.Top="{Binding TransformManager.CanvasTop,
                                                                 ElementName=RootUserControl}"
-                                           Width="120000"
-                                           Height="8000"
                                            GridColor="White"
-                                           MoveX="{Binding TransformManager.MoveX,
-                                                           ElementName=RootUserControl}"
-                                           MoveY="{Binding TransformManager.MoveY,
-                                                           ElementName=RootUserControl}"
+                                           
+                                           OriginalWidth="1500"
+                                           OriginalHeight="1500"
+                                           
+                                           Background="#F0FEFEFE"
+
                                            ScaleCenterX="{Binding TransformManager.ScaleCenterX,
                                                                   ElementName=RootUserControl}"
                                            ScaleCenterY="{Binding TransformManager.ScaleCenterY,
                                                                   ElementName=RootUserControl}"
-                                           ScaleRateX="{Binding TransformManager.ScaleRateX,
-                                                                ElementName=RootUserControl}"
-                                           ScaleRateY="{Binding TransformManager.ScaleRateY,
+
+                                           
+                                           ScaleRate="{Binding TransformManager.ScaleRate,
                                                                 ElementName=RootUserControl}"
                                            SnapsToDevicePixels="True">
 
-                <Rectangle Canvas.Left="20"
-                           Canvas.Top="400"
-                           Width="100"
-                           Height="20"
-                           Fill="#80ffff55" />
+                <!--ScaleRateX="{Binding TransformManager.ScaleRateX,
+                ElementName=RootUserControl}"
+                ScaleRateY="{Binding TransformManager.ScaleRateY,
+                ElementName=RootUserControl}"-->
+
+                <!--MoveX="{Binding TransformManager.MoveX,
+                ElementName=RootUserControl}"
+                MoveY="{Binding TransformManager.MoveY,
+                ElementName=RootUserControl}"-->
 
                 <Rectangle Canvas.Left="20"
                            Canvas.Top="400"
-                           Width="100"
+                           Width="20"
                            Height="20"
                            Fill="#80ffff55" />
-                <Grid Canvas.Left="20"
-                      Canvas.Top="400">
-                    
-                </Grid>
+
+                <Rectangle Canvas.Left="140"
+                           Canvas.Top="400"
+                           Width="20"
+                           Height="20"
+                           Fill="#80ffff55" />
+                
+                <Grid Canvas.Left="20" Canvas.Top="400" />
 
             </local:ScalableCoordinatePlane>
 
@@ -107,15 +115,15 @@
                 <TextBlock Grid.Row="0"
                            Grid.Column="0"
                            Margin="4,0,2,0"
-                           Text="Коэффициент масштаба по оси X. (ScaleRateX)" />
+                           Text="Коэффициент масштаба." />
                 <TextBlock Grid.Row="0"
                            Grid.Column="1"
                            Margin="2,0,4,0"
                            HorizontalAlignment="Center"
-                           Text="{Binding TransformManager.ScaleRateX,
+                           Text="{Binding TransformManager.ScaleRate,
                                           ElementName=RootUserControl}" />
 
-                <TextBlock Grid.Row="1"
+                <!--<TextBlock Grid.Row="1"
                            Grid.Column="0"
                            Margin="4,0,2,0"
                            Text="Коэффициент масштаба по оси Y. (ScaleRateY)" />
@@ -124,9 +132,9 @@
                            Margin="2,0,4,0"
                            HorizontalAlignment="Center"
                            Text="{Binding TransformManager.ScaleRateY,
-                                          ElementName=RootUserControl}" />
+                                          ElementName=RootUserControl}" />-->
 
-                <TextBlock Grid.Row="2"
+                <!--<TextBlock Grid.Row="2"
                            Grid.Column="0"
                            Margin="4,0,2,0"
                            Text="Опорная точка масштабирования. Координата X. (CenterX)" />
@@ -135,9 +143,9 @@
                            Margin="2,0,4,0"
                            HorizontalAlignment="Center"
                            Text="{Binding TransformManager.ScaleCenterX,
-                                          ElementName=RootUserControl}" />
+                                          ElementName=RootUserControl}" />-->
 
-                <TextBlock Grid.Row="3"
+                <!--<TextBlock Grid.Row="3"
                            Grid.Column="0"
                            Margin="4,0,2,0"
                            Text="Опорная точка масштабирования. Координата Y. (CenterY)" />
@@ -146,7 +154,7 @@
                            Margin="2,0,4,0"
                            HorizontalAlignment="Center"
                            Text="{Binding TransformManager.ScaleCenterY,
-                                          ElementName=RootUserControl}" />
+                                          ElementName=RootUserControl}" />-->
 
                 <TextBlock Grid.Row="4"
                            Grid.Column="0"
@@ -195,29 +203,29 @@
                 <TextBlock Grid.Row="8"
                            Grid.Column="0"
                            Margin="4,0,2,0"
-                           Text="Ширина координатной плоскости с учётом масштаба." />
+                           Text="Ширина координатной плоскости." />
                 <TextBlock Grid.Row="8"
                            Grid.Column="1"
                            Margin="2,0,4,0"
                            HorizontalAlignment="Center"
-                           Text="{Binding TransformManager.WidthWithScaling,
-                                          ElementName=RootUserControl}" />
+                           Text="{Binding Width,
+                                          ElementName=_scalableCoordinatePlane}" />
 
                 <TextBlock Grid.Row="9"
                            Grid.Column="0"
                            Margin="4,0,2,0"
-                           Text="Высота координатной плоскости с учётом масштаба." />
+                           Text="Высота координатной плоскости." />
                 <TextBlock Grid.Row="9"
                            Grid.Column="1"
                            Margin="2,0,4,0"
                            HorizontalAlignment="Center"
-                           Text="{Binding TransformManager.HeightWithScaling,
-                                          ElementName=RootUserControl}" />
+                           Text="{Binding Height,
+                                          ElementName=_scalableCoordinatePlane}" />
 
                 <TextBlock Grid.Row="10"
                            Grid.Column="0"
                            Margin="4,0,2,0"
-                           Text="Актуальная ширина ViewPort." />
+                           Text="Ширина ViewPort." />
                 <TextBlock Grid.Row="10"
                            Grid.Column="1"
                            Margin="2,0,4,0"
@@ -228,7 +236,7 @@
                 <TextBlock Grid.Row="11"
                            Grid.Column="0"
                            Margin="4,0,2,0"
-                           Text="Актуальная высота ViewPort." />
+                           Text="Высота ViewPort." />
                 <TextBlock Grid.Row="11"
                            Grid.Column="1"
                            Margin="2,0,4,0"
@@ -236,7 +244,7 @@
                            Text="{Binding ActualHeight,
                                           ElementName=_coordinateViewPort}" />
 
-                <TextBlock Grid.Row="12"
+                <!--<TextBlock Grid.Row="12"
                            Grid.Column="0"
                            Margin="4,0,2,0"
                            Text="horizontalScrollBar Maximum." />
@@ -245,7 +253,7 @@
                            Margin="2,0,4,0"
                            HorizontalAlignment="Center"
                            Text="{Binding Maximum,
-                                          ElementName=_horizontalScrollBar}" />
+                                          ElementName=_horizontalScrollBar}" />-->
             </Grid>
 
         </Canvas>
@@ -260,40 +268,44 @@
                    Grid.Row="2"
                    Grid.Column="1"
                    Orientation="Horizontal"
-                   
-                   
-                   
+                   SmallChange="1"
+                   ViewportSize="{Binding ActualWidth,
+                                          ElementName=_coordinateViewPort}"
                    Value="{Binding TransformManager.CanvasLeft,
-                            ElementName=RootUserControl,
-                            Converter={StaticResource disc}}"
-                   
-                   ViewportSize="{Binding ActualWidth, ElementName=_coordinateViewPort}" SmallChange="1">
+                                   ElementName=RootUserControl,
+                                   Converter={StaticResource disc}}">
             <ScrollBar.Maximum>
                 <MultiBinding Converter="{StaticResource wtmc}">
-                    <Binding ElementName="RootUserControl" Path="TransformManager.WidthWithScaling"/>
-                    <Binding ElementName="RootUserControl" Path="TransformManager.RealWidth"/>
+                    <Binding ElementName="RootUserControl" Path="TransformManager.WidthWithScaling" />
+                    <Binding ElementName="RootUserControl" Path="TransformManager.RealWidth" />
                 </MultiBinding>
             </ScrollBar.Maximum>
-            
+
         </ScrollBar>
 
-        <!--Maximum="{Binding ActualWidth, ElementName=_coordinateViewPort, Converter={StaticResource wtmc}, ConverterParameter=TransformManager}"-->
+        <!--  Maximum="{Binding ActualWidth, ElementName=_coordinateViewPort, Converter={StaticResource wtmc}, ConverterParameter=TransformManager}"  -->
 
         <!--  Maximum="{Binding TransformManager.MaximumWidthScroll, ElementName=RootUserControl}"  -->
-        <!--Maximum="{Binding Path=TransformManager.MaximumWidthScroll,
-        Converter={StaticResource wtmc},
-        ConverterParameter=TransformManager}"-->
+        <!--
+            Maximum="{Binding Path=TransformManager.MaximumWidthScroll,
+            Converter={StaticResource wtmc},
+            ConverterParameter=TransformManager}"
+        -->
 
-        <!--Maximum="{Binding Path=TransformManager.MaximumWidthScroll,
-        Converter={StaticResource wtmc},
-        ConverterParameter=TransformManager}"-->
+        <!--
+            Maximum="{Binding Path=TransformManager.MaximumWidthScroll,
+            Converter={StaticResource wtmc},
+            ConverterParameter=TransformManager}"
+        -->
 
-        <!--ViewportSize="{Binding ActualWidth, ElementName=_coordinateViewPort}"
-        Visibility="{Binding HorizontalScrollBarVisibility,
-        ElementName=RootUserControl}"
-        Value="{Binding TransformManager.CanvasLeft,
-        ElementName=RootUserControl,
-        Converter={StaticResource disc}}"-->
+        <!--
+            ViewportSize="{Binding ActualWidth, ElementName=_coordinateViewPort}"
+            Visibility="{Binding HorizontalScrollBarVisibility,
+            ElementName=RootUserControl}"
+            Value="{Binding TransformManager.CanvasLeft,
+            ElementName=RootUserControl,
+            Converter={StaticResource disc}}"
+        -->
 
     </Grid>
 </UserControl>
