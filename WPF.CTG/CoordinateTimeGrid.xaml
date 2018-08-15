@@ -37,32 +37,13 @@
                                                                  ElementName=RootUserControl}"
                                            Canvas.Top="{Binding TransformManager.CanvasTop,
                                                                 ElementName=RootUserControl}"
+                                           Background="#F03E3E3E"
                                            GridColor="White"
-                                           
-                                           OriginalWidth="1500"
                                            OriginalHeight="1500"
-                                           
-                                           Background="#F0FEFEFE"
-
-                                           ScaleCenterX="{Binding TransformManager.ScaleCenterX,
-                                                                  ElementName=RootUserControl}"
-                                           ScaleCenterY="{Binding TransformManager.ScaleCenterY,
-                                                                  ElementName=RootUserControl}"
-
-                                           
+                                           OriginalWidth="1500"
                                            ScaleRate="{Binding TransformManager.ScaleRate,
-                                                                ElementName=RootUserControl}"
+                                                               ElementName=RootUserControl}"
                                            SnapsToDevicePixels="True">
-
-                <!--ScaleRateX="{Binding TransformManager.ScaleRateX,
-                ElementName=RootUserControl}"
-                ScaleRateY="{Binding TransformManager.ScaleRateY,
-                ElementName=RootUserControl}"-->
-
-                <!--MoveX="{Binding TransformManager.MoveX,
-                ElementName=RootUserControl}"
-                MoveY="{Binding TransformManager.MoveY,
-                ElementName=RootUserControl}"-->
 
                 <Rectangle Canvas.Left="20"
                            Canvas.Top="400"
@@ -75,7 +56,7 @@
                            Width="20"
                            Height="20"
                            Fill="#80ffff55" />
-                
+
                 <Grid Canvas.Left="20" Canvas.Top="400" />
 
             </local:ScalableCoordinatePlane>
@@ -282,30 +263,5 @@
             </ScrollBar.Maximum>
 
         </ScrollBar>
-
-        <!--  Maximum="{Binding ActualWidth, ElementName=_coordinateViewPort, Converter={StaticResource wtmc}, ConverterParameter=TransformManager}"  -->
-
-        <!--  Maximum="{Binding TransformManager.MaximumWidthScroll, ElementName=RootUserControl}"  -->
-        <!--
-            Maximum="{Binding Path=TransformManager.MaximumWidthScroll,
-            Converter={StaticResource wtmc},
-            ConverterParameter=TransformManager}"
-        -->
-
-        <!--
-            Maximum="{Binding Path=TransformManager.MaximumWidthScroll,
-            Converter={StaticResource wtmc},
-            ConverterParameter=TransformManager}"
-        -->
-
-        <!--
-            ViewportSize="{Binding ActualWidth, ElementName=_coordinateViewPort}"
-            Visibility="{Binding HorizontalScrollBarVisibility,
-            ElementName=RootUserControl}"
-            Value="{Binding TransformManager.CanvasLeft,
-            ElementName=RootUserControl,
-            Converter={StaticResource disc}}"
-        -->
-
     </Grid>
 </UserControl>
