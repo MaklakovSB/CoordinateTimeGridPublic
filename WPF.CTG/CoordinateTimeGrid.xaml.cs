@@ -1,8 +1,6 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Threading;
 
 namespace WPF.CTG
 {
@@ -141,28 +139,6 @@ namespace WPF.CTG
             InitializeComponent();
 
             TransformManager.TransformInit(_coordinateViewPort, _scalableCoordinatePlane);
-
-            //// Перенесено в XAML.
-            ////var cnv = new Canvas()
-            ////{
-            ////    Name = "_coordinateViewPort",
-            ////    ClipToBounds = true,
-            ////    Background = new SolidColorBrush(Colors.Black),
-            ////};
-            ////
-            ////var scp = new ScalableCoordinatePlane()
-            ////{
-            ////    Name = "_scalableCoordinatePlane",
-            ////    Height = 2000,
-            ////    Width = 5000,
-            ////    GridColor = Colors.White
-            ////};
-            ////
-            ////Canvas.SetTop(scp, 0);
-            ////Canvas.SetLeft(scp, 0);
-            ////
-            ////cnv.Children.Add(scp);
-            ////Content = cnv;
         }
 
         #endregion
