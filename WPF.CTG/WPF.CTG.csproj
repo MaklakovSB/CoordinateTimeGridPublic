@@ -49,7 +49,6 @@
     <Compile Include="ScalableCoordinatePlane.xaml.cs">
       <DependentUpon>ScalableCoordinatePlane.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ExtremePoints.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CoordinateTimeGrid.xaml.cs">
       <DependentUpon>CoordinateTimeGrid.xaml</DependentUpon>
