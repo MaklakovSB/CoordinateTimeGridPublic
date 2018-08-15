@@ -302,6 +302,7 @@ namespace WPF.CTG
             if (obj != null)
             {
                 var newValue = (double) e.NewValue;
+                var scaleDelta = newValue / obj._scaleRate;
                 obj._scaleRate = newValue;
 
                 obj._scaleRateY = newValue;
@@ -309,6 +310,18 @@ namespace WPF.CTG
 
                 obj.Height = obj._originalHeight * obj._scaleRateY;
                 obj.Width = obj._originalWidth * obj._scaleRateX;
+
+                if (obj.Children.Count > 0)
+                {
+                    foreach (FrameworkElement child in obj.Children)
+                    {
+                        child.Width *= scaleDelta;
+                        child.Height *= scaleDelta;
+
+                        child.SetCurrentValue(Canvas.LeftProperty, Canvas.GetLeft(child) * scaleDelta);
+                        child.SetCurrentValue(Canvas.TopProperty, Canvas.GetTop(child) * scaleDelta);
+                    }
+                }
             }
         }
 
