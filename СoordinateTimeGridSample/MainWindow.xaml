@@ -16,6 +16,6 @@
     <Grid>
         <ctg:CoordinateTimeGrid DebugInfoVisibility="Visible"
                                 HorizontalScrollBarVisibility="Visible"
-                                IsBlockingScaleY="False" />
+                                IsBlockingScaleY="False"/>
     </Grid>
 </Window>

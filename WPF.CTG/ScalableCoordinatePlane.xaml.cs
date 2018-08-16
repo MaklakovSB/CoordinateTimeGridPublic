@@ -1,7 +1,9 @@
 ﻿using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Media;
+using System.Windows.Shapes;
 
 namespace WPF.CTG
 {
@@ -10,10 +12,24 @@ namespace WPF.CTG
     /// </summary>
     public partial class ScalableCoordinatePlane : Canvas, INotifyPropertyChanged
     {
+        #region Константы
+
+        /// <summary>
+        /// Зарезервированное имя вертикальных линий разметки.
+        /// </summary>
+        public const string verticalLine = "verticalLine";
+
+        /// <summary>
+        /// Зарезервированное имя горизонтальных линий разметки.
+        /// </summary>
+        public const string horizontalLine = "horizontalLine";
+
+        #endregion
+
         #region Свойства зависимости
 
         /// <summary>
-        /// Инициальная высота.
+        /// Оригинальная высота.
         /// </summary>
         public static readonly DependencyProperty OriginalHeightProperty = DependencyProperty.Register(
             nameof(OriginalHeight),
@@ -22,7 +38,7 @@ namespace WPF.CTG
             new PropertyMetadata(0.0, OnOriginalHeightPropertyChange));
 
         /// <summary>
-        /// Инициальная ширина.
+        /// Оригинальная ширина.
         /// </summary>
         public static readonly DependencyProperty OriginalWidthProperty = DependencyProperty.Register(
             nameof(OriginalWidth),
@@ -184,6 +200,20 @@ namespace WPF.CTG
             }
         }
 
+        /// <summary>
+        /// Текущая дельта коэффициента масштабирования.
+        /// </summary>
+        public double ScaleDelta
+        {
+            get { return _scaleDelta; }
+            set
+            {
+                _scaleDelta = value;
+                OnPropertyChanged(nameof(ScaleDelta));
+            }
+        }
+        private double _scaleDelta;
+
         #endregion
 
         #region * Конструкторы
@@ -195,8 +225,6 @@ namespace WPF.CTG
         {
             DataContext = this;
             InitializeComponent();
-
-            //MarkingGridInitialize();
         }
 
         #endregion
@@ -208,7 +236,81 @@ namespace WPF.CTG
         /// </summary>
         private void MarkingGridInitialize()
         {
-            ;
+            var vertCount = OriginalWidth / 10;
+            var horizCount = OriginalHeight / 10;
+
+            for (var x = 0; x < vertCount; x++)
+            {
+                var vLine = new Line()
+                {
+                    Name = nameof(verticalLine),
+                    X1 = x * 10,
+                    X2 = x * 10,
+                    Y1 = 0,
+                    Y2 = ActualHeight,
+                    StrokeThickness = 0.4,
+                    Stroke = new SolidColorBrush(GridColor),
+                };
+
+                Binding bindActualHeight = new Binding();
+                bindActualHeight.Source = this;
+                bindActualHeight.Path = new PropertyPath(nameof(ActualHeight));
+                bindActualHeight.Mode = BindingMode.OneWay;
+                vLine.SetBinding(Line.Y2Property, bindActualHeight);
+
+                ////Binding bindMarkingGridColorBrush = new Binding();
+                ////bindMarkingGridColorBrush.Source = this;
+                ////bindMarkingGridColorBrush.Path = new PropertyPath(nameof(GridColor));
+                ////bindMarkingGridColorBrush.Mode = BindingMode.OneWay;
+                ////vLine.SetBinding(Shape.StrokeProperty, bindMarkingGridColorBrush);
+
+
+                Children.Add(vLine);
+            }
+
+            for (var y = 0; y < horizCount; y++)
+            {
+                var hLine = new Line()
+                {
+                    Name = nameof(horizontalLine),
+                    X1 = 0,
+                    X2 = ActualWidth,
+                    Y1 = y * 10,
+                    Y2 = y * 10,
+                    StrokeThickness = 0.2,
+                    SnapsToDevicePixels = true,
+                    Stroke = new SolidColorBrush(GridColor),
+                };
+
+                Binding bindActualWidth = new Binding();
+                bindActualWidth.Source = this;
+                bindActualWidth.Path = new PropertyPath(nameof(ActualWidth));
+                bindActualWidth.Mode = BindingMode.OneWay;
+                hLine.SetBinding(Line.X2Property, bindActualWidth);
+
+                ////Binding bindMarkingGridColorBrush = new Binding();
+                ////bindMarkingGridColorBrush.Source = this;
+                ////bindMarkingGridColorBrush.Path = new PropertyPath(nameof(GridColor));
+                ////bindMarkingGridColorBrush.Mode = BindingMode.OneWay;
+                ////hLine.SetBinding(Shape.StrokeProperty, bindMarkingGridColorBrush);
+
+                Children.Add(hLine);
+            }
+        }
+
+        #endregion
+
+        #region Обработчики событий
+
+        /// <summary>
+        /// Загрузка контрола.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Canvas_Loaded(object sender, RoutedEventArgs e)
+        {
+            // Инициализация разметочной сетки.
+            MarkingGridInitialize();
         }
 
         #endregion
@@ -255,9 +357,7 @@ namespace WPF.CTG
             var obj = d as ScalableCoordinatePlane;
             if (obj != null)
             {
-                //var scb = (SolidColorBrush)obj._markingGridGeometry.Brush;
-                //scb.Color = (Color)e.NewValue;
-                obj.GridColor = (Color)e.NewValue;
+                obj.SetValue(GridColorProperty, (Color)e.NewValue);
             }
         }
 
@@ -302,24 +402,45 @@ namespace WPF.CTG
             if (obj != null)
             {
                 var newValue = (double) e.NewValue;
-                var scaleDelta = newValue / obj._scaleRate;
-                obj._scaleRate = newValue;
 
+                // Вычисляем текущую дельту коэффициента масштабирования.
+                obj.ScaleDelta = newValue / obj._scaleRate;
+
+                // Сохраняем новый коэффициент масштабирования.
+                obj._scaleRate = newValue;
                 obj._scaleRateY = newValue;
                 obj._scaleRateX = newValue;
 
+                // Масштабируем размеры координатной плоскости.
                 obj.Height = obj._originalHeight * obj._scaleRateY;
                 obj.Width = obj._originalWidth * obj._scaleRateX;
 
+                // Масштабируем содержимое координатной плоскости.
                 if (obj.Children.Count > 0)
                 {
                     foreach (FrameworkElement child in obj.Children)
                     {
-                        child.Width *= scaleDelta;
-                        child.Height *= scaleDelta;
+                        child.Width *= obj.ScaleDelta;
+                        child.Height *= obj.ScaleDelta;
 
-                        child.SetCurrentValue(Canvas.LeftProperty, Canvas.GetLeft(child) * scaleDelta);
-                        child.SetCurrentValue(Canvas.TopProperty, Canvas.GetTop(child) * scaleDelta);
+                        child.SetCurrentValue(Canvas.LeftProperty, Canvas.GetLeft(child) * obj.ScaleDelta);
+                        child.SetCurrentValue(Canvas.TopProperty, Canvas.GetTop(child) * obj.ScaleDelta);
+
+                        // Масштабируем координаты вертикальных линий разметки.
+                        if (child.Name == nameof(verticalLine))
+                        {
+                            var vertLine = (Line)child;
+                            vertLine.X1 *= obj.ScaleDelta;
+                            vertLine.X2 *= obj.ScaleDelta;
+                        }
+
+                        // Масштабируем координаты горизонтальных линий разметки.
+                        if (child.Name == nameof(horizontalLine))
+                        {
+                            var vertLine = (Line)child;
+                            vertLine.Y1 *= obj.ScaleDelta;
+                            vertLine.Y2 *= obj.ScaleDelta;
+                        }
                     }
                 }
             }
@@ -340,5 +461,6 @@ namespace WPF.CTG
         public event PropertyChangedEventHandler PropertyChanged;
 
         #endregion
+
     }
 }

@@ -6,4 +6,4 @@
         d:DesignHeight="100"
         d:DesignWidth="200"
         SnapsToDevicePixels="True"
-        mc:Ignorable="d" />
+        mc:Ignorable="d" Loaded="Canvas_Loaded" />
