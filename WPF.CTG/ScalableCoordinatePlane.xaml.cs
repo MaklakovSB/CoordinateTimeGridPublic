@@ -49,11 +49,20 @@ namespace WPF.CTG
         /// <summary>
         /// Цвет кисти разметочной сетки.
         /// </summary>
-        public static readonly DependencyProperty GridColorProperty = DependencyProperty.Register(
-            nameof(GridColor),
-            typeof(Color),
+        public static readonly DependencyProperty MarkingGridBrushProperty = DependencyProperty.Register(
+            nameof(MarkingGridBrush),
+            typeof(Brush),
             typeof(ScalableCoordinatePlane),
-            new PropertyMetadata(Colors.Transparent, OnGridColorPropertyChange));
+            new PropertyMetadata(Brushes.Transparent, OnMarkingGridBrushPropertyChange));
+
+        /// <summary>
+        /// Толщина линий разметочной сетки.
+        /// </summary>
+        public static readonly DependencyProperty MarkingGridStrokeThicknessProperty = DependencyProperty.Register(
+            nameof(MarkingGridStrokeThickness),
+            typeof(double),
+            typeof(ScalableCoordinatePlane),
+            new PropertyMetadata(0.4, OnMarkingGridStrokeThicknessPropertyChange));
 
         /// <summary>
         /// Коэффициент масштаба по оси X.
@@ -107,10 +116,19 @@ namespace WPF.CTG
         /// <summary>
         /// Цвет кисти разметочной сетки
         /// </summary>
-        public Color GridColor
+        public Brush MarkingGridBrush
         {
-            get { return (Color) GetValue(GridColorProperty); }
-            set { SetValue(GridColorProperty, value); }
+            get { return (Brush) GetValue(MarkingGridBrushProperty); }
+            set { SetValue(MarkingGridBrushProperty, value); }
+        }
+
+        /// <summary>
+        /// Толщина линий разметочной сетки.
+        /// </summary>
+        public double MarkingGridStrokeThickness
+        {
+            get { return (double) GetValue(MarkingGridStrokeThicknessProperty); }
+            set { SetValue(MarkingGridStrokeThicknessProperty, value); }
         }
 
         /// <summary>
@@ -248,8 +266,7 @@ namespace WPF.CTG
                     X2 = x * 10,
                     Y1 = 0,
                     Y2 = ActualHeight,
-                    StrokeThickness = 0.4,
-                    Stroke = new SolidColorBrush(GridColor),
+                    //StrokeThickness = 0.4,
                 };
 
                 Binding bindActualHeight = new Binding();
@@ -258,11 +275,17 @@ namespace WPF.CTG
                 bindActualHeight.Mode = BindingMode.OneWay;
                 vLine.SetBinding(Line.Y2Property, bindActualHeight);
 
-                ////Binding bindMarkingGridColorBrush = new Binding();
-                ////bindMarkingGridColorBrush.Source = this;
-                ////bindMarkingGridColorBrush.Path = new PropertyPath(nameof(GridColor));
-                ////bindMarkingGridColorBrush.Mode = BindingMode.OneWay;
-                ////vLine.SetBinding(Shape.StrokeProperty, bindMarkingGridColorBrush);
+                Binding bindMarkingGridBrush = new Binding();
+                bindMarkingGridBrush.Source = this;
+                bindMarkingGridBrush.Path = new PropertyPath(nameof(MarkingGridBrush));
+                bindMarkingGridBrush.Mode = BindingMode.OneWay;
+                vLine.SetBinding(Shape.StrokeProperty, bindMarkingGridBrush);
+
+                Binding bindMarkingGridStrokeThickness = new Binding();
+                bindMarkingGridStrokeThickness.Source = this;
+                bindMarkingGridStrokeThickness.Path = new PropertyPath(nameof(MarkingGridStrokeThickness));
+                bindMarkingGridStrokeThickness.Mode = BindingMode.OneWay;
+                vLine.SetBinding(Shape.StrokeThicknessProperty, bindMarkingGridStrokeThickness);
 
 
                 Children.Add(vLine);
@@ -277,9 +300,9 @@ namespace WPF.CTG
                     X2 = ActualWidth,
                     Y1 = y * 10,
                     Y2 = y * 10,
-                    StrokeThickness = 0.2,
-                    SnapsToDevicePixels = true,
-                    Stroke = new SolidColorBrush(GridColor),
+                    //StrokeThickness = 0.2,
+                    //SnapsToDevicePixels = true,
+                    //Stroke = MarkingGridBrush,
                 };
 
                 Binding bindActualWidth = new Binding();
@@ -288,11 +311,17 @@ namespace WPF.CTG
                 bindActualWidth.Mode = BindingMode.OneWay;
                 hLine.SetBinding(Line.X2Property, bindActualWidth);
 
-                ////Binding bindMarkingGridColorBrush = new Binding();
-                ////bindMarkingGridColorBrush.Source = this;
-                ////bindMarkingGridColorBrush.Path = new PropertyPath(nameof(GridColor));
-                ////bindMarkingGridColorBrush.Mode = BindingMode.OneWay;
-                ////hLine.SetBinding(Shape.StrokeProperty, bindMarkingGridColorBrush);
+                Binding bindMarkingGridBrush = new Binding();
+                bindMarkingGridBrush.Source = this;
+                bindMarkingGridBrush.Path = new PropertyPath(nameof(MarkingGridBrush));
+                bindMarkingGridBrush.Mode = BindingMode.OneWay;
+                hLine.SetBinding(Shape.StrokeProperty, bindMarkingGridBrush);
+
+                Binding bindMarkingGridStrokeThickness = new Binding();
+                bindMarkingGridStrokeThickness.Source = this;
+                bindMarkingGridStrokeThickness.Path = new PropertyPath(nameof(MarkingGridStrokeThickness));
+                bindMarkingGridStrokeThickness.Mode = BindingMode.OneWay;
+                hLine.SetBinding(Shape.StrokeThicknessProperty, bindMarkingGridStrokeThickness);
 
                 Children.Add(hLine);
             }
@@ -352,12 +381,26 @@ namespace WPF.CTG
         /// </summary>
         /// <param name="d"></param>
         /// <param name="e"></param>
-        private static void OnGridColorPropertyChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void OnMarkingGridBrushPropertyChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var obj = d as ScalableCoordinatePlane;
             if (obj != null)
             {
-                obj.SetValue(GridColorProperty, (Color)e.NewValue);
+                obj.SetValue(MarkingGridBrushProperty, e.NewValue);
+            }
+        }
+
+        /// <summary>
+        /// Изменение толщины линий разметочной сетки.
+        /// </summary>
+        /// <param name="d"></param>
+        /// <param name="e"></param>
+        private static void OnMarkingGridStrokeThicknessPropertyChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var obj = d as ScalableCoordinatePlane;
+            if (obj != null)
+            {
+                obj.SetValue(MarkingGridStrokeThicknessProperty, e.NewValue);
             }
         }
 

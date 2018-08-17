@@ -38,13 +38,17 @@
                                            Canvas.Top="{Binding TransformManager.CanvasTop,
                                                                 ElementName=RootUserControl}"
                                            Background="#F03E3E3E"
-                                           GridColor="CornflowerBlue"
+                                           MarkingGridBrush="{Binding MarkingGridBrush,
+                                                                      ElementName=RootUserControl,
+                                                                      Mode=TwoWay}"
+                                           MarkingGridStrokeThickness="{Binding MarkingGridStrokeThickness,
+                                                                                ElementName=RootUserControl,
+                                                                                Mode=TwoWay}"
                                            OriginalHeight="1500"
                                            OriginalWidth="1500"
                                            ScaleRate="{Binding TransformManager.ScaleRate,
                                                                ElementName=RootUserControl}"
                                            SnapsToDevicePixels="True">
-                <!--"{Binding Path=DataContext.MarkingGridColor, ElementName=RootUserControl}"-->
 
                 <Rectangle Canvas.Left="20"
                            Canvas.Top="400"

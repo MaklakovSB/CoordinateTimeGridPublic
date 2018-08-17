@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Windows;
+using System.Windows.Media;
 
 namespace СoordinateTimeGridSample
 {
@@ -12,6 +13,23 @@ namespace СoordinateTimeGridSample
         {
             DataContext = this;
             InitializeComponent();
+        }
+
+        /// <summary>
+        /// Тест цвета разметочной сетки.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            if (_coordinateTimeGrid.MarkingGridBrush != Brushes.CornflowerBlue)
+            {
+                _coordinateTimeGrid.MarkingGridBrush = Brushes.CornflowerBlue;
+            }
+            else
+            {
+                _coordinateTimeGrid.MarkingGridBrush = Brushes.Goldenrod;
+            }
         }
 
         #region Реализация интерфейсов
@@ -27,5 +45,6 @@ namespace СoordinateTimeGridSample
         public event PropertyChangedEventHandler PropertyChanged;
 
         #endregion
+
     }
 }

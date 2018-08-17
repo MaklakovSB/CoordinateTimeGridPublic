@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace WPF.CTG
 {
@@ -56,6 +57,24 @@ namespace WPF.CTG
             typeof(CoordinateTimeGrid),
             new PropertyMetadata(Visibility.Collapsed, OnHorizontalScrollBarVisibilityPropertyChange));
 
+        /// <summary>
+        /// Цвет кисти разметочной сетки.
+        /// </summary>
+        public static readonly DependencyProperty MarkingGridBrushProperty = DependencyProperty.Register(
+            nameof(MarkingGridBrush),
+            typeof(Brush),
+            typeof(CoordinateTimeGrid),
+            new PropertyMetadata(Brushes.Transparent, OnMarkingGridBrushPropertyChange));
+
+        /// <summary>
+        /// Толщина линий разметочной сетки.
+        /// </summary>
+        public static readonly DependencyProperty MarkingGridStrokeThicknessProperty = DependencyProperty.Register(
+            nameof(MarkingGridStrokeThickness),
+            typeof(double),
+            typeof(CoordinateTimeGrid),
+            new PropertyMetadata(0.4, OnMarkingGridStrokeThicknessPropertyChange));
+
         #endregion
 
         #region Акцессоры свойств зависимости
@@ -103,6 +122,24 @@ namespace WPF.CTG
         {
             get { return (Visibility)GetValue(HorizontalScrollBarVisibilityProperty); }
             set { SetValue(HorizontalScrollBarVisibilityProperty, value); }
+        }
+
+        /// <summary>
+        /// Кисть разметочной сетки координатной плоскости.
+        /// </summary>
+        public Brush MarkingGridBrush
+        {
+            get { return (Brush)GetValue(MarkingGridBrushProperty); }
+            set { SetValue(MarkingGridBrushProperty, value); }
+        }
+
+        /// <summary>
+        /// Толщина линий разметочной сетки.
+        /// </summary>
+        public double MarkingGridStrokeThickness
+        {
+            get { return (double)GetValue(MarkingGridStrokeThicknessProperty); }
+            set { SetValue(MarkingGridStrokeThicknessProperty, value); }
         }
 
         #endregion
@@ -218,6 +255,34 @@ namespace WPF.CTG
             {
                 var hsb = obj._horizontalScrollBar;
                 hsb.SetValue(VisibilityProperty, (Visibility)e.NewValue);
+            }
+        }
+
+        /// <summary>
+        /// Изменение цвета кисти разметочной сетки.
+        /// </summary>
+        /// <param name="d"></param>
+        /// <param name="e"></param>
+        private static void OnMarkingGridBrushPropertyChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var obj = d as CoordinateTimeGrid;
+            if (obj != null)
+            {
+                obj.SetValue(MarkingGridBrushProperty, e.NewValue);
+            }
+        }
+
+        /// <summary>
+        /// Изменение толщины линий разметочной сетки.
+        /// </summary>
+        /// <param name="d"></param>
+        /// <param name="e"></param>
+        private static void OnMarkingGridStrokeThicknessPropertyChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var obj = d as CoordinateTimeGrid;
+            if (obj != null)
+            {
+                obj.SetValue(MarkingGridStrokeThicknessProperty, e.NewValue);
             }
         }
 

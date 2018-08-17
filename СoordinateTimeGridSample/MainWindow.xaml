@@ -14,8 +14,32 @@
         </Style>
     </Window.Resources>
     <Grid>
-        <ctg:CoordinateTimeGrid DebugInfoVisibility="Visible"
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <ctg:CoordinateTimeGrid x:Name="_coordinateTimeGrid"
+                                Grid.Row="0"
+                                DebugInfoVisibility="Visible"
                                 HorizontalScrollBarVisibility="Visible"
-                                IsBlockingScaleY="False"/>
+                                IsBlockingScaleY="False"
+                                MarkingGridBrush="LawnGreen"
+                                MarkingGridStrokeThickness="{Binding Path=Value,
+                                                                     ElementName=sliderStrokeThickness,
+                                                                     Mode=TwoWay}" />
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal">
+            <Button Click="Button_Click" Content="  Тест смены цвета разметочной сетки.  " />
+            <StackPanel>
+                <Label x:Name="testLabelStrokeThickness" Content="Тест изменения толщины разметочной сетки." />
+                <Slider x:Name="sliderStrokeThickness"
+                        Width="{Binding Path=ActualWidth,
+                                        ElementName=testLabelStrokeThickness}"
+                        Maximum="0.9"
+                        Minimum="0.0"
+                        SmallChange="0.01"
+                        Value="0.2" />
+            </StackPanel>
+        </StackPanel>
     </Grid>
 </Window>
