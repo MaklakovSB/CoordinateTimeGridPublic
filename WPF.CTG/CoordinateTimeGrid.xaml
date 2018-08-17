@@ -38,7 +38,7 @@
                                            Canvas.Top="{Binding TransformManager.CanvasTop,
                                                                 ElementName=RootUserControl}"
                                            Background="#F03E3E3E"
-                                           GridColor="DarkCyan"
+                                           GridColor="CornflowerBlue"
                                            OriginalHeight="1500"
                                            OriginalWidth="1500"
                                            ScaleRate="{Binding TransformManager.ScaleRate,

@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 
 namespace WPF.CTG
 {
@@ -156,8 +155,8 @@ namespace WPF.CTG
             var obj = d as CoordinateTimeGrid;
             if (obj != null)
             {
-                var div = obj._debugInfo.Visibility;
-                div = (Visibility)e.NewValue;
+                var div = obj._debugInfo;
+                div.SetValue(VisibilityProperty, (Visibility)e.NewValue);
             }
         }
 
@@ -172,7 +171,7 @@ namespace WPF.CTG
             if (obj != null)
             {
                 var tm = obj.TransformManager;
-                tm.IsBlockingScaleX = (bool)e.NewValue;
+                tm.SetValue(IsBlockingScaleXProperty, (bool)e.NewValue);
             }
         }
 
@@ -187,7 +186,7 @@ namespace WPF.CTG
             if (obj != null)
             {
                 var tm = obj.TransformManager;
-                tm.IsBlockingScaleY = (bool)e.NewValue;
+                tm.SetValue(IsBlockingScaleYProperty, (bool)e.NewValue);
             }
         }
 
@@ -202,7 +201,8 @@ namespace WPF.CTG
             if (obj != null)
             {
                 var vsb = obj._verticalScrollBar;
-                vsb.Visibility = (Visibility)e.NewValue;
+                vsb.SetValue(VisibilityProperty, (Visibility)e.NewValue);
+
             }
         }
 
@@ -217,7 +217,7 @@ namespace WPF.CTG
             if (obj != null)
             {
                 var hsb = obj._horizontalScrollBar;
-                hsb.Visibility = (Visibility)e.NewValue;
+                hsb.SetValue(VisibilityProperty, (Visibility)e.NewValue);
             }
         }
 
