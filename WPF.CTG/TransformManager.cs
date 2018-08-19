@@ -116,7 +116,7 @@ namespace WPF.CTG
                 OnPropertyChanged(nameof(CanvasLeft));
             }
         }
-        private double _canvasLeft = 0;
+        private double _canvasLeft;
 
         /// <summary>
         /// Позиция дочернего холста относительно верхней границы внешнего холста.
@@ -130,7 +130,7 @@ namespace WPF.CTG
                 OnPropertyChanged(nameof(CanvasTop));
             }
         }
-        private double _canvasTop = 0;
+        private double _canvasTop;
 
         /// <summary>
         /// Накапливаемый коэффициент масштаба по оси X.
@@ -392,23 +392,28 @@ namespace WPF.CTG
             // 2) Получим предстоящий шаг масштабирования в зависимости от дельты.
             var futureScalingRateStep = GetScalingRateStep(delta);
 
-            // 3) Нужно проверить не станет ли координатная плоскость менше чем клиентская область
-            // ViewPort'а. Если при следующем шаге масштабирования она станет меньше, то нужно вычислить
-            // корректировочный множитель так чтоб координатная плоскость точно вписалась в клиентскую
-            // область ViewPort'a. (Актуально при уменьшении масштаба)
+            // 3) Нужно проверить не станет ли координатная плоскость менше размеров ViewPort'а при следующем шаге
+            // масштабирования. Если таки станет меньше, то нужно вычислить корректировочный множитель, чтобы
+            // координатная плоскость точно вписалась в размеры ViewPort'a. (Актуально при уменьшении масштаба)
 
-            // Получим ширины и высоты ViewPort'а и координатной плоскости с учётом предстоящего шага масштабирования.
+            // Получим ширины и высоты ViewPort'а и координатной плоскости с учётом текущего и предстоящего шага масштабирования.
             var widthPlane = _scalableCoordinatePlane.OriginalWidth * ScaleRate * futureScalingRateStep;
             var heightPlane = _scalableCoordinatePlane.OriginalHeight * ScaleRate * futureScalingRateStep;
+
+            // Получим актуальные размеры ViewPort'а.
             var widthViewPort = _coordinateViewPort.ActualWidth;
             var heightViewPort = _coordinateViewPort.ActualHeight;
 
-            // Получим разницу размеров между внутренним и внешним контролом.
+            // Получим разницу размеров между координатной плоскостью и ViewPort'ом.
             var differenceWidth = widthPlane - widthViewPort;
             var differenceHeight = heightPlane - heightViewPort;
 
             // Если разница менше чем 0, то это наш случай - координатная плоскость при следующем шаге
             // масштабирования станет меньше чем ViewPort и нужно скорретировать предстоящий шаг масштаба.
+
+            // Если разница отоицательна, то это значит что координатная плоскость меньше чем ViewPort 
+            // и нужно масштабировать её под размеры ViewPort'а.
+
             if (differenceWidth < 0 || differenceHeight < 0)
             {
                 double correctedScalingRateStep;
@@ -416,10 +421,12 @@ namespace WPF.CTG
                 // Будем ориентироваться на ту ось, по которой размер координатной плоскости меньше.
                 if (differenceWidth < differenceHeight)
                 {
+                    // Расчёт корректировки.
                     correctedScalingRateStep = widthViewPort / widthPlane;
                 }
                 else
                 {
+                    // Расчёт корректировки.
                     correctedScalingRateStep = heightViewPort / heightPlane;
                 }
 
@@ -437,11 +444,11 @@ namespace WPF.CTG
             var futureCursorPosY = cursorPos.Y * futureScalingRateStep;
 
             // Вычислим разницу нового и старого положения.
-            var diffOpsX = cursorPos.X - futureCursorPosX;
+            var diffPosX = cursorPos.X - futureCursorPosX;
             var diffPosY = cursorPos.Y - futureCursorPosY;
 
             // Сохраним разницу как будующее смещение для возможных корректировок.
-            var futureMoveX = diffOpsX;
+            var futureMoveX = diffPosX;
             var futureMoveY = diffPosY;
 
             // Вычислим будующее положение координатной плоскости.
@@ -452,7 +459,7 @@ namespace WPF.CTG
             var futurePlaneWidth = _scalableCoordinatePlane.OriginalWidth * ScaleRate * futureScalingRateStep;
             var futurePlaneHeight = _scalableCoordinatePlane.OriginalHeight * ScaleRate * futureScalingRateStep;
 
-            // Вычислим будующую отображаемую часть координатной плоскости.
+            // Вычислим будующую отображаемую часть* координатной плоскости.
             var visiblePartWidth = futurePlaneWidth + futureCanvasLeft;
             var visiblePartHeight = futurePlaneHeight + futureCanvasTop;
 
@@ -468,14 +475,13 @@ namespace WPF.CTG
 
                 if (futureCanvasLeft > 0)
                 {
-                    futureMoveX +=- futureCanvasLeft;
+                    futureMoveX += - futureCanvasLeft;
                 }
 
                 if (visiblePartWidth < _coordinateViewPort.ActualWidth)
                 {
                     futureMoveX += _coordinateViewPort.ActualWidth - visiblePartWidth;
                 }
-
             }
 
             // Проверим не получится ли брешь между координатной плоскостью и ViewPort'ом по высоте.
@@ -484,12 +490,13 @@ namespace WPF.CTG
                 // Не может быть брешь с обеих сторон одновременно.
                 if (futureCanvasTop > 0 && visiblePartHeight < _coordinateViewPort.ActualHeight)
                 {
+                    // Может
                     //throw new Exception();
                 }
 
                 if (futureCanvasTop > 0)
                 {
-                    futureMoveY +=- futureCanvasTop;
+                    futureMoveY += - futureCanvasTop;
                 }
 
                 if (visiblePartHeight < _coordinateViewPort.ActualHeight)
@@ -501,7 +508,7 @@ namespace WPF.CTG
             MoveX = futureMoveX;
             MoveY = futureMoveY;
 
-            // Расчёт и применение масштаба.
+            // Применение масштаба.
             ScalePlane(futureScalingRateStep);
 
             // Компенсируем сдвиг канваса после масштабирования.
@@ -518,96 +525,100 @@ namespace WPF.CTG
         {
             var elementCanvas = sender as Canvas;
             if (elementCanvas == null)
-                return;
+                return; 
 
             // 1) Вначале нужно знать вся ли координатная плоскость с текущим масштабом полностью 
-            // отображена в клиентской области ViewPort'a
-            // или же часть смещена за "границу ViewPort'a".
+            // отображена во ViewPort'е или же часть смещена за "границу ViewPort'a".
 
             var scalingRateStep = 1.0;
 
-            // Получим ширины и высоты ViewPort'а и координатной плоскости.
+            // Получим ширину и высоту координатной плоскости.
             var widthPlane = _scalableCoordinatePlane.ActualWidth;
             var heightPlane = _scalableCoordinatePlane.ActualHeight;
+
+            // Получим новую ширину и высоту ViewPort'а.
             var widthViewPort = e.NewSize.Width;
             var heightViewPort = e.NewSize.Height;
 
-            // Если есть не отображённая часть слева либо брешь слева.''
+            // Если координатная плоскость не вписывается слева или сверху.
             if (CanvasLeft != 0 || CanvasTop != 0)
             {
+                // Если координатная плоскость не вписывается слева.
+                // Т.е. начало координатной плоскости по оси X левее чем левая граница ViewPort'а.
                 if (CanvasLeft < 0)
                 {
+                    // Не скрытая за левой границей часть координатной плоскости. Пока эта часть больше
+                    // чем ширина ViewPort'а, то не нужно координатную плоскость тащить вправо (Увеличивая
+                    // отрицательное значение параметра CanvasLeft до нуля.)
                     var visiblePartWidth = widthPlane - Math.Abs(CanvasLeft);
 
+                    // Если эта часть таки меньше чем ширина ViewPort'а.
                     if (visiblePartWidth < widthViewPort)
                     {
+                        // Получаем - на сколько меньше.
                         var diffWidth = widthViewPort - visiblePartWidth;
 
-                        if (diffWidth < 0)
-                        {
-                            throw new Exception();
-                        }
-
+                        // Увеличиваем отрицательное значение приближая его к нулю.
                         CanvasLeft += diffWidth;
                     }
                 }
                 else if (CanvasLeft > 0)
                 {
+                    // Не предполагалось что CanvasLeft может стать больше нуля.
                     CanvasLeft = 0;
                 }
 
+                // Если координатная плоскость не вписывается сверху т.е. начало координатной плоскости 
+                // по оси Y выше чем верхняя граница ViewPort'а.
                 if (CanvasTop < 0)
                 {
+                    // Не скрытая за верхней границей часть координатной плоскости. Пока эта часть больше
+                    // чем высота ViewPort'а, то не нужно координатную плоскость тащить вниз (Увеличивая
+                    // отрицательное значение параметра CanvasTop до нуля.)
                     var visiblePartHeight = heightPlane - Math.Abs(CanvasTop);
 
+                    // Если эта часть таки меньше чем высота ViewPort'а.
                     if (visiblePartHeight < heightViewPort)
                     {
+                        // Получаем - на сколько меньше.
                         var diffHeight = heightViewPort - visiblePartHeight;
 
-                        if (diffHeight < 0)
-                        {
-                            throw new Exception();
-                        }
-
-                        if (CanvasTop < 0)
-                        {
-                            CanvasTop += diffHeight;
-                        }
-                        else if (CanvasTop > 0)
-                        {
-                            CanvasTop -= diffHeight;
-                        }
+                        // Увеличиваем отрицательное значение приближая его к нулю.
+                        CanvasTop += diffHeight;
                     }
                 }
                 else if (CanvasTop > 0)
                 {
+                    // Не предполагалось что CanvasTop может стать больше нуля.
                     CanvasTop = 0;
                 }
             }
 
-            // Если растянули ViewPort, то координатная плоскость могла
-            // стать меньше чем ViewPort. Поэтому нужно сравнить размеры ViewPort'а с размерами
-            // координатной плоскости. И если координатная плоскость - меньше, то
-            // высчитать недостающий масштаб и применить его, а потом сделать компенсационный сдвиг. Если же
-            // координатная плоскость не меньше ViewPort'а, то просто сделать компенсационный сдвиг - достаточно.
+            // При растягивании ViewPort'а координатная плоскость могжет стать меньше чем 
+            // новые размеры ViewPort'а. Поэтому нужно сравнить новые размеры ViewPort'а с
+            // размерами координатной плоскости. И если координатная плоскость - меньше, то
+            // высчитать недостающий масштаб и применить его.
 
             // Получим разницу размеров между внутренним и внешним контролом.
             var differenceWidth = widthPlane - widthViewPort;
             var differenceHeight = heightPlane - heightViewPort;
 
-            // Если разница менше чем 0, то это наш случай - координатная плоскость меньше чем ViewPort 
-            // и нужно масштабировать её.
+            // Если разница отоицательна, то это значит что координатная плоскость меньше чем ViewPort 
+            // и нужно масштабировать её под размеры ViewPort'а.
             if (differenceWidth < 0 || differenceHeight < 0)
             {
+                // Корректировочный шаг масштабирования.
                 double correctedScalingRateStep;
 
                 // Будем ориентироваться на ту ось, по которой размер координатной плоскости меньше.
                 if (differenceWidth < differenceHeight)
                 {
+                    // Расчёт корректировки.
                     correctedScalingRateStep = widthViewPort / widthPlane;
                 }
                 else
                 {
+                    // Расчёт корректировки.
                     correctedScalingRateStep = heightViewPort / heightPlane;
                 }
 
