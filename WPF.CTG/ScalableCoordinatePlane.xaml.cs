@@ -266,7 +266,6 @@ namespace WPF.CTG
                     X2 = x * 10,
                     Y1 = 0,
                     Y2 = ActualHeight,
-                    //StrokeThickness = 0.4,
                 };
 
                 Binding bindActualHeight = new Binding();
@@ -300,9 +299,6 @@ namespace WPF.CTG
                     X2 = ActualWidth,
                     Y1 = y * 10,
                     Y2 = y * 10,
-                    //StrokeThickness = 0.2,
-                    //SnapsToDevicePixels = true,
-                    //Stroke = MarkingGridBrush,
                 };
 
                 Binding bindActualWidth = new Binding();
