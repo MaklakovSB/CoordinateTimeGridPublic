@@ -308,11 +308,6 @@ namespace WPF.CTG
                 var deltaX = currentPosition.X - _dragStart.Value.X;
                 var deltaY = currentPosition.Y - _dragStart.Value.Y;
 
-                // с применением масштаба к дельте число может стать экспонентциальным.
-                //deltaX = deltaX * ScaleRateX;
-                //deltaY = deltaY * ScaleRateY;
-
-
                 // Получаем верхние левые крайние точки внутреннего и внешнего холста
                 // для контроля верхней и левой границы.
                 var ptsPMin = _coordinateViewPort.PointToScreen(new Point() { X = 0, Y = 0 });
@@ -324,10 +319,10 @@ namespace WPF.CTG
                 var ptsCMax = _scalableCoordinatePlane.PointToScreen(new Point() { X = _scalableCoordinatePlane.ActualWidth, Y = _scalableCoordinatePlane.ActualHeight });
 
                 // Получим положительные допустимые смещения.
-                var maxOffsetToRight = (ptsPMin.X + 1 - ptsCMin.X);
-                var maxOffsetToDown = (ptsPMin.Y + 1 - ptsCMin.Y);
-                var maxOffsetToLeft = (ptsCMax.X - ptsPMax.X + 1);
-                var maxOffsetToUp = (ptsCMax.Y - ptsPMax.Y + 1);
+                var maxOffsetToRight = (ptsPMin.X - ptsCMin.X);
+                var maxOffsetToDown = (ptsPMin.Y - ptsCMin.Y);
+                var maxOffsetToLeft = (ptsCMax.X - ptsPMax.X);
+                var maxOffsetToUp = (ptsCMax.Y - ptsPMax.Y);
 
                 // Смещение вправо
                 if (deltaX > 0 && maxOffsetToRight > 0)
