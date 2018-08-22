@@ -91,6 +91,42 @@ namespace WPF.CTG
             typeof(ScalableCoordinatePlane),
             new PropertyMetadata(1.0, OnScaleRatePropertyChange));
 
+        /// <summary>
+        /// Верхняя видимая граница координатной плоскости.
+        /// </summary>
+        public static readonly DependencyProperty TopVisibleEdgeProperty = DependencyProperty.Register(
+            nameof(TopVisibleEdge),
+            typeof(double),
+            typeof(ScalableCoordinatePlane),
+            new PropertyMetadata(0.0));
+
+        /// <summary>
+        /// Нижняя видимая граница координатной плоскости.
+        /// </summary>
+        public static readonly DependencyProperty BottomVisibleEdgeProperty = DependencyProperty.Register(
+            nameof(BottomVisibleEdge),
+            typeof(double),
+            typeof(ScalableCoordinatePlane),
+            new PropertyMetadata(0.0));
+
+        /// <summary>
+        /// Левая видимая граница координатной плоскости.
+        /// </summary>
+        public static readonly DependencyProperty LeftVisibleEdgeProperty = DependencyProperty.Register(
+            nameof(LeftVisibleEdge),
+            typeof(double),
+            typeof(ScalableCoordinatePlane),
+            new PropertyMetadata(0.0));
+
+        /// <summary>
+        /// Правая видимая граница координатной плоскости.
+        /// </summary>
+        public static readonly DependencyProperty RightVisibleEdgeProperty = DependencyProperty.Register(
+            nameof(RightVisibleEdge),
+            typeof(double),
+            typeof(ScalableCoordinatePlane),
+            new PropertyMetadata(0.0));
+
         #endregion
 
         #region Акцессоры свойств зависимости
@@ -158,6 +194,42 @@ namespace WPF.CTG
             set { SetValue(ScaleRateYProperty, value); }
         }
 
+        /// <summary>
+        /// Верхняя видимая граница координатной плоскости.
+        /// </summary>
+        public double TopVisibleEdge
+        {
+            get { return (double)GetValue(TopVisibleEdgeProperty); }
+            set { SetValue(TopVisibleEdgeProperty, value); }
+        }
+
+        /// <summary>
+        /// Нижняя видимая граница координатной плоскости.
+        /// </summary>
+        public double BottomVisibleEdge
+        {
+            get { return (double)GetValue(BottomVisibleEdgeProperty); }
+            set { SetValue(BottomVisibleEdgeProperty, value); }
+        }
+
+        /// <summary>
+        /// Левая видимая граница координатной плоскости.
+        /// </summary>
+        public double LeftVisibleEdge
+        {
+            get { return (double)GetValue(LeftVisibleEdgeProperty); }
+            set { SetValue(LeftVisibleEdgeProperty, value); }
+        }
+
+        /// <summary>
+        /// Правая видимая граница координатной плоскости.
+        /// </summary>
+        public double RightVisibleEdge
+        {
+            get { return (double)GetValue(RightVisibleEdgeProperty); }
+            set { SetValue(RightVisibleEdgeProperty, value); }
+        }
+
         #endregion
 
         #region Приватные поля
@@ -168,21 +240,6 @@ namespace WPF.CTG
         private double _scaleRateX = 1;
         private double _scaleRateY = 1;
         private double _scaleRate = 1;
-
-        /// <summary>
-        /// Кисть разметочной сетки.
-        /// </summary>
-        private SolidColorBrush _coordinateGridColor;
-
-        /// <summary>
-        /// Родительский канвас
-        /// </summary>        
-        private Canvas _coordinateViewPort;
-
-        /// <summary>
-        /// This
-        /// </summary>
-        private Canvas _scalableCoordinatePlane;
 
         #endregion
 
@@ -264,15 +321,20 @@ namespace WPF.CTG
                     Name = nameof(verticalLine),
                     X1 = x * 10,
                     X2 = x * 10,
-                    Y1 = 0,
-                    Y2 = ActualHeight,
+                    //SnapsToDevicePixels = true,
                 };
 
-                Binding bindActualHeight = new Binding();
-                bindActualHeight.Source = this;
-                bindActualHeight.Path = new PropertyPath(nameof(ActualHeight));
-                bindActualHeight.Mode = BindingMode.OneWay;
-                vLine.SetBinding(Line.Y2Property, bindActualHeight);
+                Binding bindVisibleTop = new Binding();
+                bindVisibleTop.Source = this;
+                bindVisibleTop.Path = new PropertyPath(nameof(TopVisibleEdge));
+                bindVisibleTop.Mode = BindingMode.OneWay;
+                vLine.SetBinding(Line.Y1Property, bindVisibleTop);
+
+                Binding bindVisibleBottom = new Binding();
+                bindVisibleBottom.Source = this;
+                bindVisibleBottom.Path = new PropertyPath(nameof(BottomVisibleEdge));
+                bindVisibleBottom.Mode = BindingMode.OneWay;
+                vLine.SetBinding(Line.Y2Property, bindVisibleBottom);
 
                 Binding bindMarkingGridBrush = new Binding();
                 bindMarkingGridBrush.Source = this;
@@ -286,7 +348,6 @@ namespace WPF.CTG
                 bindMarkingGridStrokeThickness.Mode = BindingMode.OneWay;
                 vLine.SetBinding(Shape.StrokeThicknessProperty, bindMarkingGridStrokeThickness);
 
-
                 Children.Add(vLine);
             }
 
@@ -295,17 +356,22 @@ namespace WPF.CTG
                 var hLine = new Line()
                 {
                     Name = nameof(horizontalLine),
-                    X1 = 0,
-                    X2 = ActualWidth,
                     Y1 = y * 10,
                     Y2 = y * 10,
+                    //SnapsToDevicePixels = true
                 };
 
-                Binding bindActualWidth = new Binding();
-                bindActualWidth.Source = this;
-                bindActualWidth.Path = new PropertyPath(nameof(ActualWidth));
-                bindActualWidth.Mode = BindingMode.OneWay;
-                hLine.SetBinding(Line.X2Property, bindActualWidth);
+                Binding bindVisibleLeft = new Binding();
+                bindVisibleLeft.Source = this;
+                bindVisibleLeft.Path = new PropertyPath(nameof(LeftVisibleEdge));
+                bindVisibleLeft.Mode = BindingMode.OneWay;
+                hLine.SetBinding(Line.X1Property, bindVisibleLeft);
+
+                Binding bindVisibleRight = new Binding();
+                bindVisibleRight.Source = this;
+                bindVisibleRight.Path = new PropertyPath(nameof(RightVisibleEdge));
+                bindVisibleRight.Mode = BindingMode.OneWay;
+                hLine.SetBinding(Line.X2Property, bindVisibleRight);
 
                 Binding bindMarkingGridBrush = new Binding();
                 bindMarkingGridBrush.Source = this;
@@ -459,26 +525,29 @@ namespace WPF.CTG
                 {
                     foreach (FrameworkElement child in obj.Children)
                     {
-                        child.Width *= obj.ScaleDelta;
-                        child.Height *= obj.ScaleDelta;
-
-                        child.SetCurrentValue(Canvas.LeftProperty, Canvas.GetLeft(child) * obj.ScaleDelta);
-                        child.SetCurrentValue(Canvas.TopProperty, Canvas.GetTop(child) * obj.ScaleDelta);
-
-                        // Масштабируем координаты вертикальных линий разметки.
                         if (child.Name == nameof(verticalLine))
                         {
+                            // Масштабируем координаты вертикальных линий разметки.
                             var vertLine = (Line)child;
                             vertLine.X1 *= obj.ScaleDelta;
                             vertLine.X2 *= obj.ScaleDelta;
                         }
-
-                        // Масштабируем координаты горизонтальных линий разметки.
-                        if (child.Name == nameof(horizontalLine))
+                        else if (child.Name == nameof(horizontalLine))
                         {
+                            // Масштабируем координаты горизонтальных линий разметки.
                             var vertLine = (Line)child;
                             vertLine.Y1 *= obj.ScaleDelta;
                             vertLine.Y2 *= obj.ScaleDelta;
+                        }
+                        else
+                        {
+                            // Масштабируем размеры содержимого.
+                            child.Width *= obj.ScaleDelta;
+                            child.Height *= obj.ScaleDelta;
+
+                            // Масштабируем координаты содержимого.
+                            child.SetCurrentValue(Canvas.LeftProperty, Canvas.GetLeft(child) * obj.ScaleDelta);
+                            child.SetCurrentValue(Canvas.TopProperty, Canvas.GetTop(child) * obj.ScaleDelta);
                         }
                     }
                 }
