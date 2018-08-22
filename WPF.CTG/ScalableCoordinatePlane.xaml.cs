@@ -17,12 +17,12 @@ namespace WPF.CTG
         /// <summary>
         /// Зарезервированное имя вертикальных линий разметки.
         /// </summary>
-        public const string verticalLine = "verticalLine";
+        public const string VerticalLine = "VerticalLine";
 
         /// <summary>
         /// Зарезервированное имя горизонтальных линий разметки.
         /// </summary>
-        public const string horizontalLine = "horizontalLine";
+        public const string HorizontalLine = "HorizontalLine";
 
         #endregion
 
@@ -81,15 +81,6 @@ namespace WPF.CTG
             typeof(double),
             typeof(ScalableCoordinatePlane),
             new PropertyMetadata(1.0, OnScaleRateYPropertyChange));
-
-        /// <summary>
-        /// Коэффициент масштаба по оси Y и X.
-        /// </summary>
-        public static readonly DependencyProperty ScaleRateProperty = DependencyProperty.Register(
-            nameof(ScaleRate),
-            typeof(double),
-            typeof(ScalableCoordinatePlane),
-            new PropertyMetadata(1.0, OnScaleRatePropertyChange));
 
         /// <summary>
         /// Верхняя видимая граница координатной плоскости.
@@ -239,7 +230,6 @@ namespace WPF.CTG
 
         private double _scaleRateX = 1;
         private double _scaleRateY = 1;
-        private double _scaleRate = 1;
 
         #endregion
 
@@ -276,18 +266,32 @@ namespace WPF.CTG
         }
 
         /// <summary>
-        /// Текущая дельта коэффициента масштабирования.
+        /// Текущая дельта коэффициента масштабирования по оси X.
         /// </summary>
-        public double ScaleDelta
+        public double ScaleDeltaX
         {
-            get { return _scaleDelta; }
+            get { return _scaleDeltaX; }
             set
             {
-                _scaleDelta = value;
-                OnPropertyChanged(nameof(ScaleDelta));
+                _scaleDeltaX = value;
+                OnPropertyChanged(nameof(ScaleDeltaX));
             }
         }
-        private double _scaleDelta;
+        private double _scaleDeltaX;
+
+        /// <summary>
+        /// Текущая дельта коэффициента масштабирования по оси Y.
+        /// </summary>
+        public double ScaleDeltaY
+        {
+            get { return _scaleDeltaY; }
+            set
+            {
+                _scaleDeltaY = value;
+                OnPropertyChanged(nameof(ScaleDeltaY));
+            }
+        }
+        private double _scaleDeltaY;
 
         #endregion
 
@@ -318,7 +322,7 @@ namespace WPF.CTG
             {
                 var vLine = new Line()
                 {
-                    Name = nameof(verticalLine),
+                    Name = nameof(VerticalLine),
                     X1 = x * 10,
                     X2 = x * 10,
                 };
@@ -354,7 +358,7 @@ namespace WPF.CTG
             {
                 var hLine = new Line()
                 {
-                    Name = nameof(horizontalLine),
+                    Name = nameof(HorizontalLine),
                     Y1 = y * 10,
                     Y2 = y * 10,
                 };
@@ -384,6 +388,86 @@ namespace WPF.CTG
                 hLine.SetBinding(Shape.StrokeThicknessProperty, bindMarkingGridStrokeThickness);
 
                 Children.Add(hLine);
+            }
+        }
+
+        /// <summary>
+        /// Применение масштаба по оси X
+        /// </summary>
+        private void ScaleRateXChange(double newScaleRate)
+        {
+            var newValue = newScaleRate;
+
+            // Вычисляем текущую дельту коэффициента масштабирования.
+            ScaleDeltaX = newValue / _scaleRateX;
+
+            // Сохраняем новый коэффициент масштабирования.
+            _scaleRateX = newValue;
+
+            // Масштабируем размеры координатной плоскости.
+            Width = _originalWidth * _scaleRateX;
+
+            // Масштабируем содержимое координатной плоскости.
+            if (Children.Count > 0)
+            {
+                foreach (FrameworkElement child in Children)
+                {
+                    if (child.Name == nameof(VerticalLine))
+                    {
+                        // Масштабируем координаты вертикальных линий разметки.
+                        var vertLine = (Line)child;
+                        vertLine.X1 *= ScaleDeltaX;
+                        vertLine.X2 *= ScaleDeltaX;
+                    }
+                    else
+                    {
+                        // Масштабируем размеры содержимого.
+                        child.Width *= ScaleDeltaX;
+
+                        // Масштабируем координаты содержимого.
+                        child.SetCurrentValue(Canvas.LeftProperty, Canvas.GetLeft(child) * ScaleDeltaX);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Применение масштаба по оси Y
+        /// </summary>
+        private void ScaleRateYChange(double newScaleRate)
+        {
+            var newValue = newScaleRate;
+
+            // Вычисляем текущую дельту коэффициента масштабирования.
+            ScaleDeltaY = newValue / _scaleRateY;
+
+            // Сохраняем новый коэффициент масштабирования.
+            _scaleRateY = newValue;
+
+            // Масштабируем размеры координатной плоскости.
+            Height = _originalHeight * _scaleRateY;
+
+            // Масштабируем содержимое координатной плоскости.
+            if (Children.Count > 0)
+            {
+                foreach (FrameworkElement child in Children)
+                {
+                    if (child.Name == nameof(HorizontalLine))
+                    {
+                        // Масштабируем координаты горизонтальных линий разметки.
+                        var horizontLine = (Line)child;
+                        horizontLine.Y1 *= ScaleDeltaY;
+                        horizontLine.Y2 *= ScaleDeltaY;
+                    }
+                    else
+                    {
+                        // Масштабируем размеры содержимого.
+                        child.Height *= ScaleDeltaY;
+
+                        // Масштабируем координаты содержимого.
+                        child.SetCurrentValue(Canvas.TopProperty, Canvas.GetTop(child) * ScaleDeltaY);
+                    }
+                }
             }
         }
 
@@ -446,8 +530,8 @@ namespace WPF.CTG
             var obj = d as ScalableCoordinatePlane;
             if (obj != null)
             {
-                obj._scaleRateX = (double)e.NewValue;
-                obj.Width = obj._originalWidth * obj._scaleRateX;
+                var newValue = (double) e.NewValue;
+                obj.ScaleRateXChange(newValue);
             }
         }
 
@@ -461,66 +545,8 @@ namespace WPF.CTG
             var obj = d as ScalableCoordinatePlane;
             if (obj != null)
             {
-                obj._scaleRateY = (double)e.NewValue;
-                obj.Height = obj._originalHeight * obj._scaleRateY;
-            }
-        }
-
-        /// <summary>
-        /// Изменение коэффициента масштаба по оси Y.
-        /// </summary>
-        /// <param name="d"></param>
-        /// <param name="e"></param>
-        private static void OnScaleRatePropertyChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var obj = d as ScalableCoordinatePlane;
-            if (obj != null)
-            {
-                var newValue = (double) e.NewValue;
-
-                // Вычисляем текущую дельту коэффициента масштабирования.
-                obj.ScaleDelta = newValue / obj._scaleRate;
-
-                // Сохраняем новый коэффициент масштабирования.
-                obj._scaleRate = newValue;
-                obj._scaleRateY = newValue;
-                obj._scaleRateX = newValue;
-
-                // Масштабируем размеры координатной плоскости.
-                obj.Height = obj._originalHeight * obj._scaleRateY;
-                obj.Width = obj._originalWidth * obj._scaleRateX;
-
-                // Масштабируем содержимое координатной плоскости.
-                if (obj.Children.Count > 0)
-                {
-                    foreach (FrameworkElement child in obj.Children)
-                    {
-                        if (child.Name == nameof(verticalLine))
-                        {
-                            // Масштабируем координаты вертикальных линий разметки.
-                            var vertLine = (Line)child;
-                            vertLine.X1 *= obj.ScaleDelta;
-                            vertLine.X2 *= obj.ScaleDelta;
-                        }
-                        else if (child.Name == nameof(horizontalLine))
-                        {
-                            // Масштабируем координаты горизонтальных линий разметки.
-                            var vertLine = (Line)child;
-                            vertLine.Y1 *= obj.ScaleDelta;
-                            vertLine.Y2 *= obj.ScaleDelta;
-                        }
-                        else
-                        {
-                            // Масштабируем размеры содержимого.
-                            child.Width *= obj.ScaleDelta;
-                            child.Height *= obj.ScaleDelta;
-
-                            // Масштабируем координаты содержимого.
-                            child.SetCurrentValue(Canvas.LeftProperty, Canvas.GetLeft(child) * obj.ScaleDelta);
-                            child.SetCurrentValue(Canvas.TopProperty, Canvas.GetTop(child) * obj.ScaleDelta);
-                        }
-                    }
-                }
+                var newValue = (double)e.NewValue;
+                obj.ScaleRateYChange(newValue);
             }
         }
 
@@ -539,6 +565,5 @@ namespace WPF.CTG
         public event PropertyChangedEventHandler PropertyChanged;
 
         #endregion
-
     }
 }
