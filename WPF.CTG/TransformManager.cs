@@ -35,7 +35,12 @@ namespace WPF.CTG
         private Point? _dragStart;
 
         /// <summary>
-        /// Ссылка на родительский канвас-рамку
+        /// Ссылка на общий контролл.
+        /// </summary>
+        private CoordinateTimeGrid _coordinateTimeGrid;
+
+        /// <summary>
+        /// Ссылка на ViewPort
         /// </summary>
         private Canvas _coordinateViewPort;
 
@@ -47,34 +52,6 @@ namespace WPF.CTG
         #endregion
 
         #region Свойства
-
-        /// <summary>
-        /// Координата X опорной точки масштабирования координатной плоскости. ZoomCenterX
-        /// </summary>
-        public double ScaleCenterX
-        {
-            get { return _scaleCenterX; }
-            set
-            {
-                _scaleCenterX = value;
-                OnPropertyChanged(nameof(ScaleCenterX));
-            }
-        }
-        private double _scaleCenterX;
-
-        /// <summary>
-        /// Координата Y опорной точки масштабирования координатной плоскости. ZoomCenterY
-        /// </summary>
-        public double ScaleCenterY
-        {
-            get { return _scaleCenterY; }
-            set
-            {
-                _scaleCenterY = value;
-                OnPropertyChanged(nameof(ScaleCenterY));
-            }
-        }
-        private double _scaleCenterY;
 
         /// <summary>
         /// Корректировочное смещение дочернего холста по оси X.
@@ -148,7 +125,7 @@ namespace WPF.CTG
 
                 _scaleRateX = value;
                 OnPropertyChanged(nameof(ScaleRateX));
-                OnPropertyChanged(nameof(HeightWithScaling));
+                OnPropertyChanged(nameof(WidthWithScaling));
             }
         }
         private double _scaleRateX = 1.0;
@@ -169,32 +146,10 @@ namespace WPF.CTG
 
                 _scaleRateY = value;
                 OnPropertyChanged(nameof(ScaleRateY));
-                OnPropertyChanged(nameof(WidthWithScaling));
-            }
-        }
-        private double _scaleRateY = 1.0;
-
-        /// <summary>
-        /// Накапливаемый коэффициент масштаба по оси Y и X.
-        /// </summary>
-        public double ScaleRate
-        {
-            get { return _scaleRate; }
-            set
-            {
-                //if (value > MaxScaleFactor)
-                //    value = MaxScaleFactor;
-
-                //if (value < MinScaleFactor)
-                //    value = MinScaleFactor;
-
-                _scaleRate = value;
-                OnPropertyChanged(nameof(ScaleRate));
-                OnPropertyChanged(nameof(WidthWithScaling));
                 OnPropertyChanged(nameof(HeightWithScaling));
             }
         }
-        private double _scaleRate = 1.0;
+        private double _scaleRateY = 1.0;
 
         /// <summary>
         /// Блокировать масштабирование по оси X.
@@ -291,8 +246,10 @@ namespace WPF.CTG
         /// </summary>
         /// <param name="canvas"></param>
         /// <param name="scalableCoordinatePlane"></param>
-        public void TransformInit(Canvas canvas, ScalableCoordinatePlane scalableCoordinatePlane)
+        public void TransformInit(CoordinateTimeGrid coordinateTimeGrid, Canvas canvas, ScalableCoordinatePlane scalableCoordinatePlane)
         {
+            _coordinateTimeGrid = coordinateTimeGrid;
+
             _coordinateViewPort = canvas;
             _coordinateViewPort.SizeChanged += sizeChanged;
 
@@ -450,8 +407,8 @@ namespace WPF.CTG
             // координатная плоскость точно вписалась в размеры ViewPort'a. (Актуально при уменьшении масштаба)
 
             // Получим ширины и высоты ViewPort'а и координатной плоскости с учётом текущего и предстоящего шага масштабирования.
-            var widthPlane = _scalableCoordinatePlane.OriginalWidth * ScaleRate * futureScalingRateStep;
-            var heightPlane = _scalableCoordinatePlane.OriginalHeight * ScaleRate * futureScalingRateStep;
+            var widthPlane = _scalableCoordinatePlane.OriginalWidth * ScaleRateX * futureScalingRateStep;
+            var heightPlane = _scalableCoordinatePlane.OriginalHeight * ScaleRateY * futureScalingRateStep;
 
             // Получим актуальные размеры ViewPort'а.
             var widthViewPort = _coordinateViewPort.ActualWidth;
@@ -461,12 +418,8 @@ namespace WPF.CTG
             var differenceWidth = widthPlane - widthViewPort;
             var differenceHeight = heightPlane - heightViewPort;
 
-            // Если разница менше чем 0, то это наш случай - координатная плоскость при следующем шаге
-            // масштабирования станет меньше чем ViewPort и нужно скорретировать предстоящий шаг масштаба.
-
-            // Если разница отоицательна, то это значит что координатная плоскость меньше чем ViewPort 
+            // Если разница отрицательна, то это значит что координатная плоскость меньше чем ViewPort 
             // и нужно масштабировать её под размеры ViewPort'а.
-
             if (differenceWidth < 0 || differenceHeight < 0)
             {
                 double correctedScalingRateStep;
@@ -485,7 +438,7 @@ namespace WPF.CTG
 
                 // Корректируем шаг масштаба.
                 futureScalingRateStep *= correctedScalingRateStep;
-            } // конец (3)
+            }
 
             // 4) Вычислить смещения.
 
@@ -493,8 +446,8 @@ namespace WPF.CTG
             var cursorPos = Mouse.GetPosition(_scalableCoordinatePlane);
 
             // Вычислим будующее положение точки
-            var futureCursorPosX = cursorPos.X * futureScalingRateStep;
-            var futureCursorPosY = cursorPos.Y * futureScalingRateStep;
+            double futureCursorPosX = cursorPos.X * futureScalingRateStep;
+            double futureCursorPosY = cursorPos.Y * futureScalingRateStep;
 
             // Вычислим разницу нового и старого положения.
             var diffPosX = cursorPos.X - futureCursorPosX;
@@ -509,8 +462,8 @@ namespace WPF.CTG
             var futureCanvasTop = CanvasTop + futureMoveY;
 
             // Вычислим будующие размеры координатной плоскости.
-            var futurePlaneWidth = _scalableCoordinatePlane.OriginalWidth * ScaleRate * futureScalingRateStep;
-            var futurePlaneHeight = _scalableCoordinatePlane.OriginalHeight * ScaleRate * futureScalingRateStep;
+            double futurePlaneWidth = _scalableCoordinatePlane.OriginalWidth * ScaleRateX * futureScalingRateStep;
+            double futurePlaneHeight = _scalableCoordinatePlane.OriginalHeight * ScaleRateY * futureScalingRateStep;
 
             // Вычислим будующую отображаемую часть* координатной плоскости.
             var visiblePartWidth = futurePlaneWidth + futureCanvasLeft;
@@ -556,10 +509,18 @@ namespace WPF.CTG
                 {
                     futureMoveY += _coordinateViewPort.ActualHeight - visiblePartHeight;
                 }
-            }// Конец (4)
+            }
 
-            MoveX = futureMoveX;
-            MoveY = futureMoveY;
+            MoveX = 0;
+            MoveY = 0;
+
+            // Если не заблокировано масштабирование по оси.
+            if (!_coordinateTimeGrid.IsBlockingScaleX)
+                MoveX = futureMoveX;
+
+            // Если не заблокировано масштабирование по оси.
+            if (!_coordinateTimeGrid.IsBlockingScaleY)
+                MoveY = futureMoveY;
 
             // Применение масштаба.
             ScalePlane(futureScalingRateStep);
@@ -686,6 +647,7 @@ namespace WPF.CTG
             // для вызова метода CalculateVisibleEdge
             if (_coordinateViewPort.Width != e.NewSize.Width)
                 OnPropertyChanged(nameof(_coordinateViewPort.Width));
+
             if(_coordinateViewPort.Height != e.NewSize.Height)
                 OnPropertyChanged(nameof(_coordinateViewPort.Height));
         }
@@ -705,6 +667,7 @@ namespace WPF.CTG
                 CalculateVisibleEdge();
             }
         }
+        
         #endregion
 
         #region Методы
@@ -739,7 +702,14 @@ namespace WPF.CTG
             {
                 // Рсчёт масштаба.
                 _scalingRateStep = scalingRateStep;
-                ScaleRate *= _scalingRateStep;
+
+                // Если не заблокировано масштабирование по оси.
+                if (!_coordinateTimeGrid.IsBlockingScaleX)
+                    ScaleRateX *= _scalingRateStep;
+
+                // Если не заблокировано масштабирование по оси.
+                if (!_coordinateTimeGrid.IsBlockingScaleY)
+                    ScaleRateY *= _scalingRateStep;
             }
         }
 
