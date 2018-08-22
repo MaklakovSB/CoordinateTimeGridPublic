@@ -262,18 +262,6 @@ namespace WPF.CTG
         }
         private double _rightVisibleEdge;
 
-        //        ViewPortHeight
-        public double ViewPortHeight
-        {
-            get { return _viewPortHeight; }
-            set
-            {
-                _viewPortHeight = value;
-                OnPropertyChanged(nameof(ViewPortHeight));
-            }
-        }
-        private double _viewPortHeight;
-
         /// <summary>
         /// Ширина координатной плоскости.
         /// </summary>
@@ -768,8 +756,6 @@ namespace WPF.CTG
 
             BottomVisibleEdge = TopVisibleEdge + viewPortHeight;
             RightVisibleEdge = LeftVisibleEdge + viewPortWidth;
-
-            ViewPortHeight = viewPortHeight;
         }
 
         #endregion
