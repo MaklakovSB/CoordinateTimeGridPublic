@@ -207,6 +207,74 @@ namespace WPF.CTG
         public bool IsBlockingScaleY { get; set; }
 
         /// <summary>
+        /// Верхняя видимая граница координатной плоскости.
+        /// </summary>
+        public double TopVisibleEdge
+        {
+            get { return _topVisibleEdge; }
+            set
+            {
+                _topVisibleEdge = value;
+                OnPropertyChanged(nameof(TopVisibleEdge));
+            }
+        }
+        private double _topVisibleEdge;
+
+        /// <summary>
+        /// Нижняя видимая граница координатной плоскости.
+        /// </summary>
+        public double BottomVisibleEdge
+        {
+            get { return _bottomVisibleEdge; }
+            set
+            {
+                _bottomVisibleEdge = value;
+                OnPropertyChanged(nameof(BottomVisibleEdge));
+            }
+        }
+        private double _bottomVisibleEdge;
+
+        /// <summary>
+        /// Левая видимая граница координатной плоскости.
+        /// </summary>
+        public double LeftVisibleEdge
+        {
+            get { return _leftVisibleEdge; }
+            set
+            {
+                _leftVisibleEdge = value;
+                OnPropertyChanged(nameof(LeftVisibleEdge));
+            }
+        }
+        private double _leftVisibleEdge;
+
+        /// <summary>
+        /// Правая видимая граница координатной плоскости.
+        /// </summary>
+        public double RightVisibleEdge
+        {
+            get { return _rightVisibleEdge; }
+            set
+            {
+                _rightVisibleEdge = value;
+                OnPropertyChanged(nameof(RightVisibleEdge));
+            }
+        }
+        private double _rightVisibleEdge;
+
+        //        ViewPortHeight
+        public double ViewPortHeight
+        {
+            get { return _viewPortHeight; }
+            set
+            {
+                _viewPortHeight = value;
+                OnPropertyChanged(nameof(ViewPortHeight));
+            }
+        }
+        private double _viewPortHeight;
+
+        /// <summary>
         /// Ширина координатной плоскости.
         /// </summary>
         public double WidthWithScaling => _scalableCoordinatePlane.ActualWidth;
@@ -246,6 +314,8 @@ namespace WPF.CTG
             _scalableCoordinatePlane.MouseUp += mouseUp;
             _scalableCoordinatePlane.MouseMove += mouseMove;
             _scalableCoordinatePlane.MouseWheel += mouseWheel;
+
+            PropertyChanged += propertyСhanged;
 
             OnPropertyChanged(nameof(WidthWithScaling));
             OnPropertyChanged(nameof(HeightWithScaling));
@@ -623,8 +693,30 @@ namespace WPF.CTG
                 // Применить масштаб.
                 ScalePlane(scalingRateStep);
             }
+
+            // Оповещение о изменившихся свойствах
+            // для вызова метода CalculateVisibleEdge
+            if (_coordinateViewPort.Width != e.NewSize.Width)
+                OnPropertyChanged(nameof(_coordinateViewPort.Width));
+            if(_coordinateViewPort.Height != e.NewSize.Height)
+                OnPropertyChanged(nameof(_coordinateViewPort.Height));
         }
 
+        /// <summary>
+        /// Обработчик событий PropertyChanged
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void propertyСhanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(CanvasLeft) | 
+                e.PropertyName == nameof(CanvasTop)  | 
+                e.PropertyName == "Width" | 
+                e.PropertyName == "Height")
+            {
+                CalculateVisibleEdge();
+            }
+        }
         #endregion
 
         #region Методы
@@ -661,6 +753,23 @@ namespace WPF.CTG
                 _scalingRateStep = scalingRateStep;
                 ScaleRate *= _scalingRateStep;
             }
+        }
+
+        /// <summary>
+        /// Метод перерасчёта видимых краёв координатной плоскости.
+        /// </summary>
+        private void CalculateVisibleEdge()
+        {
+            var viewPortHeight = _coordinateViewPort.ActualHeight;
+            var viewPortWidth = _coordinateViewPort.ActualWidth;
+
+            TopVisibleEdge = (CanvasTop * -1);
+            LeftVisibleEdge = (CanvasLeft * -1);
+
+            BottomVisibleEdge = TopVisibleEdge + viewPortHeight;
+            RightVisibleEdge = LeftVisibleEdge + viewPortWidth;
+
+            ViewPortHeight = viewPortHeight;
         }
 
         #endregion
