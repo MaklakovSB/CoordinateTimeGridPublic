@@ -175,7 +175,7 @@ namespace WPF.CTG
             DataContext = this;
             InitializeComponent();
 
-            TransformManager.TransformInit(_coordinateViewPort, _scalableCoordinatePlane);
+            TransformManager.TransformInit(this, _coordinateViewPort, _scalableCoordinatePlane);
         }
 
         #endregion
