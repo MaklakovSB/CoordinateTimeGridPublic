@@ -38,6 +38,10 @@
                                            Canvas.Top="{Binding TransformManager.CanvasTop,
                                                                 ElementName=RootUserControl}"
                                            Background="#F03E3E3E"
+                                           BottomVisibleEdge="{Binding TransformManager.BottomVisibleEdge,
+                                                                       ElementName=RootUserControl}"
+                                           LeftVisibleEdge="{Binding TransformManager.LeftVisibleEdge,
+                                                                     ElementName=RootUserControl}"
                                            MarkingGridBrush="{Binding MarkingGridBrush,
                                                                       ElementName=RootUserControl,
                                                                       Mode=TwoWay}"
@@ -46,13 +50,15 @@
                                                                                 Mode=TwoWay}"
                                            OriginalHeight="1500"
                                            OriginalWidth="15000"
-                                           ScaleRate="{Binding TransformManager.ScaleRate,
-                                                               ElementName=RootUserControl}"
-                                           TopVisibleEdge="{Binding TransformManager.TopVisibleEdge, ElementName=RootUserControl}"
-                                           BottomVisibleEdge="{Binding TransformManager.BottomVisibleEdge, ElementName=RootUserControl}"
-                                           LeftVisibleEdge="{Binding TransformManager.LeftVisibleEdge, ElementName=RootUserControl}"
-                                           RightVisibleEdge="{Binding TransformManager.RightVisibleEdge, ElementName=RootUserControl}"
-                                           SnapsToDevicePixels="True">
+                                           RightVisibleEdge="{Binding TransformManager.RightVisibleEdge,
+                                                                      ElementName=RootUserControl}"
+                                           ScaleRateX="{Binding TransformManager.ScaleRateX,
+                                                                ElementName=RootUserControl}"
+                                           ScaleRateY="{Binding TransformManager.ScaleRateY,
+                                                                ElementName=RootUserControl}"
+                                           SnapsToDevicePixels="True"
+                                           TopVisibleEdge="{Binding TransformManager.TopVisibleEdge,
+                                                                    ElementName=RootUserControl}">
 
                 <Ellipse Canvas.Left="250"
                          Canvas.Top="250"
@@ -413,49 +419,27 @@
                     </Style>
                 </Grid.Resources>
 
-                <TextBlock Grid.Row="0"
+                <TextBlock Grid.Row="1"
                            Grid.Column="0"
                            Margin="4,0,2,0"
-                           Text="Коэффициент масштаба." />
-                <TextBlock Grid.Row="0"
-                           Grid.Column="1"
-                           Margin="2,0,4,0"
-                           HorizontalAlignment="Center"
-                           Text="{Binding TransformManager.ScaleRate,
-                                          ElementName=RootUserControl}" />
-
-                <!--<TextBlock Grid.Row="1"
-                           Grid.Column="0"
-                           Margin="4,0,2,0"
-                           Text="Коэффициент масштаба по оси Y. (ScaleRateY)" />
+                           Text="Коэффициент масштаба по оси X. (ScaleRateY)" />
                 <TextBlock Grid.Row="1"
                            Grid.Column="1"
                            Margin="2,0,4,0"
                            HorizontalAlignment="Center"
-                           Text="{Binding TransformManager.ScaleRateY,
-                                          ElementName=RootUserControl}" />-->
+                           Text="{Binding TransformManager.ScaleRateX,
+                                          ElementName=RootUserControl}" />
 
-                <!--<TextBlock Grid.Row="2"
+                <TextBlock Grid.Row="2"
                            Grid.Column="0"
                            Margin="4,0,2,0"
-                           Text="Опорная точка масштабирования. Координата X. (CenterX)" />
+                           Text="Коэффициент масштаба по оси Y. (ScaleRateY)" />
                 <TextBlock Grid.Row="2"
                            Grid.Column="1"
                            Margin="2,0,4,0"
                            HorizontalAlignment="Center"
-                           Text="{Binding TransformManager.ScaleCenterX,
-                                          ElementName=RootUserControl}" />-->
-
-                <!--<TextBlock Grid.Row="3"
-                           Grid.Column="0"
-                           Margin="4,0,2,0"
-                           Text="Опорная точка масштабирования. Координата Y. (CenterY)" />
-                <TextBlock Grid.Row="3"
-                           Grid.Column="1"
-                           Margin="2,0,4,0"
-                           HorizontalAlignment="Center"
-                           Text="{Binding TransformManager.ScaleCenterY,
-                                          ElementName=RootUserControl}" />-->
+                           Text="{Binding TransformManager.ScaleRateY,
+                                          ElementName=RootUserControl}" />
 
                 <TextBlock Grid.Row="4"
                            Grid.Column="0"
@@ -466,6 +450,7 @@
                            Margin="2,0,4,0"
                            HorizontalAlignment="Center"
                            Text="{Binding TransformManager.MoveX,
+                                          StringFormat={}{0:F15},
                                           ElementName=RootUserControl}" />
 
                 <TextBlock Grid.Row="5"
@@ -477,6 +462,7 @@
                            Margin="2,0,4,0"
                            HorizontalAlignment="Center"
                            Text="{Binding TransformManager.MoveY,
+                                          StringFormat={}{0:F15},
                                           ElementName=RootUserControl}" />
 
                 <TextBlock Grid.Row="6"
@@ -488,6 +474,7 @@
                            Margin="2,0,4,0"
                            HorizontalAlignment="Center"
                            Text="{Binding TransformManager.CanvasLeft,
+                                          StringFormat={}{0:F15},
                                           ElementName=RootUserControl}" />
 
                 <TextBlock Grid.Row="7"
@@ -499,6 +486,7 @@
                            Margin="2,0,4,0"
                            HorizontalAlignment="Center"
                            Text="{Binding TransformManager.CanvasTop,
+                                          StringFormat={}{0:F15},
                                           ElementName=RootUserControl}" />
 
                 <TextBlock Grid.Row="8"
@@ -544,17 +532,6 @@
                            HorizontalAlignment="Center"
                            Text="{Binding ActualHeight,
                                           ElementName=_coordinateViewPort}" />
-
-                <!--<TextBlock Grid.Row="12"
-                           Grid.Column="0"
-                           Margin="4,0,2,0"
-                           Text="horizontalScrollBar Maximum." />
-                <TextBlock Grid.Row="12"
-                           Grid.Column="1"
-                           Margin="2,0,4,0"
-                           HorizontalAlignment="Center"
-                           Text="{Binding Maximum,
-                                          ElementName=_horizontalScrollBar}" />-->
             </Grid>
 
         </Canvas>
@@ -563,7 +540,7 @@
                    Grid.Row="1"
                    Grid.Column="2"
                    Orientation="Vertical"
-                   Visibility="{Binding VerticalScrollBarVisibility}"/>
+                   Visibility="{Binding VerticalScrollBarVisibility}" />
 
         <ScrollBar x:Name="_horizontalScrollBar"
                    Grid.Row="2"
