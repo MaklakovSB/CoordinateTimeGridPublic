@@ -53,7 +53,7 @@ namespace WPF.CTG
             nameof(MarkingGridBrush),
             typeof(Brush),
             typeof(ScalableCoordinatePlane),
-            new PropertyMetadata(Brushes.Transparent, OnMarkingGridBrushPropertyChange));
+            new PropertyMetadata(Brushes.Transparent));
 
         /// <summary>
         /// Толщина линий разметочной сетки.
@@ -62,7 +62,7 @@ namespace WPF.CTG
             nameof(MarkingGridStrokeThickness),
             typeof(double),
             typeof(ScalableCoordinatePlane),
-            new PropertyMetadata(0.4, OnMarkingGridStrokeThicknessPropertyChange));
+            new PropertyMetadata(0.4));
 
         /// <summary>
         /// Коэффициент масштаба по оси X.
@@ -321,7 +321,6 @@ namespace WPF.CTG
                     Name = nameof(verticalLine),
                     X1 = x * 10,
                     X2 = x * 10,
-                    //SnapsToDevicePixels = true,
                 };
 
                 Binding bindVisibleTop = new Binding();
@@ -358,7 +357,6 @@ namespace WPF.CTG
                     Name = nameof(horizontalLine),
                     Y1 = y * 10,
                     Y2 = y * 10,
-                    //SnapsToDevicePixels = true
                 };
 
                 Binding bindVisibleLeft = new Binding();
@@ -435,34 +433,6 @@ namespace WPF.CTG
             {
                 obj._originalWidth = (double)e.NewValue;
                 obj.Width = obj._originalWidth * obj._scaleRateX;
-            }
-        }
-
-        /// <summary>
-        /// Изменение цвета кисти разметочной сетки.
-        /// </summary>
-        /// <param name="d"></param>
-        /// <param name="e"></param>
-        private static void OnMarkingGridBrushPropertyChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var obj = d as ScalableCoordinatePlane;
-            if (obj != null)
-            {
-                obj.SetValue(MarkingGridBrushProperty, e.NewValue);
-            }
-        }
-
-        /// <summary>
-        /// Изменение толщины линий разметочной сетки.
-        /// </summary>
-        /// <param name="d"></param>
-        /// <param name="e"></param>
-        private static void OnMarkingGridStrokeThicknessPropertyChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var obj = d as ScalableCoordinatePlane;
-            if (obj != null)
-            {
-                obj.SetValue(MarkingGridStrokeThicknessProperty, e.NewValue);
             }
         }
 
