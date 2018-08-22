@@ -19,7 +19,7 @@ namespace WPF.CTG
             nameof(DebugInfoVisibility),
             typeof(Visibility),
             typeof(CoordinateTimeGrid),
-            new PropertyMetadata(Visibility.Collapsed, OnDebugInfoVisibilityPropertyChange));
+            new PropertyMetadata(Visibility.Collapsed));
 
         /// <summary>
         /// Блокировать масштабирование по оси X.
@@ -28,7 +28,7 @@ namespace WPF.CTG
             nameof(IsBlockingScaleX),
             typeof(bool),
             typeof(CoordinateTimeGrid),
-            new PropertyMetadata(false, OnIsBlockingScaleXPropertyChange));
+            new PropertyMetadata(false));
 
         /// <summary>
         /// Блокировать масштабирование по оси Y.
@@ -37,7 +37,7 @@ namespace WPF.CTG
             nameof(IsBlockingScaleY),
             typeof(bool),
             typeof(CoordinateTimeGrid),
-            new PropertyMetadata(false, OnIsBlockingScaleYPropertyChange));
+            new PropertyMetadata(false));
 
         /// <summary>
         /// Визуальное состояние вертикальной полосы прокрутки.
@@ -46,7 +46,7 @@ namespace WPF.CTG
             nameof(VerticalScrollBarVisibility),
             typeof(Visibility),
             typeof(CoordinateTimeGrid),
-            new PropertyMetadata(Visibility.Collapsed, OnVerticalScrollBarVisibilityPropertyChange));
+            new PropertyMetadata(Visibility.Collapsed));
 
         /// <summary>
         /// Визуальное состояние горизонтальной полосы прокрутки.
@@ -55,7 +55,7 @@ namespace WPF.CTG
             nameof(HorizontalScrollBarVisibility),
             typeof(Visibility),
             typeof(CoordinateTimeGrid),
-            new PropertyMetadata(Visibility.Collapsed, OnHorizontalScrollBarVisibilityPropertyChange));
+            new PropertyMetadata(Visibility.Collapsed));
 
         /// <summary>
         /// Цвет кисти разметочной сетки.
@@ -64,7 +64,7 @@ namespace WPF.CTG
             nameof(MarkingGridBrush),
             typeof(Brush),
             typeof(CoordinateTimeGrid),
-            new PropertyMetadata(Brushes.Transparent, OnMarkingGridBrushPropertyChange));
+            new PropertyMetadata(Brushes.Transparent));
 
         /// <summary>
         /// Толщина линий разметочной сетки.
@@ -73,7 +73,7 @@ namespace WPF.CTG
             nameof(MarkingGridStrokeThickness),
             typeof(double),
             typeof(CoordinateTimeGrid),
-            new PropertyMetadata(0.4, OnMarkingGridStrokeThicknessPropertyChange));
+            new PropertyMetadata(0.4));
 
         #endregion
 
@@ -181,111 +181,6 @@ namespace WPF.CTG
         #endregion
 
         #region Обработчики событий изменения свойств зависимости
-
-        /// <summary>
-        /// Изменение визуального состояния элемента отображения отладочной информации.
-        /// </summary>
-        /// <param name="d"></param>
-        /// <param name="e"></param>
-        private static void OnDebugInfoVisibilityPropertyChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var obj = d as CoordinateTimeGrid;
-            if (obj != null)
-            {
-                var div = obj._debugInfo;
-                div.SetValue(VisibilityProperty, (Visibility)e.NewValue);
-            }
-        }
-
-        /// <summary>
-        /// Изменение визуального состояния элемента отображения отладочной информации.
-        /// </summary>
-        /// <param name="d"></param>
-        /// <param name="e"></param>
-        private static void OnIsBlockingScaleXPropertyChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var obj = d as CoordinateTimeGrid;
-            if (obj != null)
-            {
-                var tm = obj.TransformManager;
-                tm.SetValue(IsBlockingScaleXProperty, (bool)e.NewValue);
-            }
-        }
-
-        /// <summary>
-        /// Изменение визуального состояния элемента отображения отладочной информации.
-        /// </summary>
-        /// <param name="d"></param>
-        /// <param name="e"></param>
-        private static void OnIsBlockingScaleYPropertyChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var obj = d as CoordinateTimeGrid;
-            if (obj != null)
-            {
-                var tm = obj.TransformManager;
-                tm.SetValue(IsBlockingScaleYProperty, (bool)e.NewValue);
-            }
-        }
-
-        /// <summary>
-        /// Визуального состояния вертикальной полосы прокрутки.
-        /// </summary>
-        /// <param name="d"></param>
-        /// <param name="e"></param>
-        private static void OnVerticalScrollBarVisibilityPropertyChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var obj = d as CoordinateTimeGrid;
-            if (obj != null)
-            {
-                var vsb = obj._verticalScrollBar;
-                vsb.SetValue(VisibilityProperty, (Visibility)e.NewValue);
-
-            }
-        }
-
-        /// <summary>
-        /// Визуального состояния горизонтальной полосы прокрутки.
-        /// </summary>
-        /// <param name="d"></param>
-        /// <param name="e"></param>
-        private static void OnHorizontalScrollBarVisibilityPropertyChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var obj = d as CoordinateTimeGrid;
-            if (obj != null)
-            {
-                var hsb = obj._horizontalScrollBar;
-                hsb.SetValue(VisibilityProperty, (Visibility)e.NewValue);
-            }
-        }
-
-        /// <summary>
-        /// Изменение цвета кисти разметочной сетки.
-        /// </summary>
-        /// <param name="d"></param>
-        /// <param name="e"></param>
-        private static void OnMarkingGridBrushPropertyChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var obj = d as CoordinateTimeGrid;
-            if (obj != null)
-            {
-                obj.SetValue(MarkingGridBrushProperty, e.NewValue);
-            }
-        }
-
-        /// <summary>
-        /// Изменение толщины линий разметочной сетки.
-        /// </summary>
-        /// <param name="d"></param>
-        /// <param name="e"></param>
-        private static void OnMarkingGridStrokeThicknessPropertyChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var obj = d as CoordinateTimeGrid;
-            if (obj != null)
-            {
-                obj.SetValue(MarkingGridStrokeThicknessProperty, e.NewValue);
-            }
-        }
-
         #endregion
 
         #region Реализация интерфейсов
