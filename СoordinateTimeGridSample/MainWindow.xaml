@@ -23,6 +23,7 @@
                                 DebugInfoVisibility="Visible"
                                 HorizontalScrollBarVisibility="Visible"
                                 VerticalScrollBarVisibility="Visible"
+                                IsBlockingScaleX="False"
                                 IsBlockingScaleY="False"
                                 MarkingGridBrush="LawnGreen"
                                 MarkingGridStrokeThickness="{Binding Path=Value,
@@ -36,7 +37,7 @@
                 <Slider x:Name="sliderStrokeThickness"
                         Width="{Binding Path=ActualWidth,
                                         ElementName=testLabelStrokeThickness}"
-                        Maximum="0.9"
+                        Maximum="3.9"
                         Minimum="0.0"
                         SmallChange="0.01"
                         Value="0.2" />
