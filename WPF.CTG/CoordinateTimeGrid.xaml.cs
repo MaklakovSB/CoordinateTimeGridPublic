@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Markup;
 using System.Windows.Media;
 
 namespace WPF.CTG
@@ -8,6 +9,7 @@ namespace WPF.CTG
     /// <summary>
     /// Interaction logic for ScalableCoordinateTimeGrid.xaml
     /// </summary>
+    [ContentProperty("Children")]
     public partial class CoordinateTimeGrid : UserControl, INotifyPropertyChanged
     {
         #region Свойства зависимости
@@ -165,6 +167,8 @@ namespace WPF.CTG
             }
         }
         private TransformManager _transformManager;
+
+        public UIElementCollection Children => _scalableCoordinatePlane.Children;
 
         #endregion
 
