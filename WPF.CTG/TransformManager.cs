@@ -125,7 +125,6 @@ namespace WPF.CTG
 
                 _scaleRateX = value;
                 OnPropertyChanged(nameof(ScaleRateX));
-                OnPropertyChanged(nameof(WidthWithScaling));
             }
         }
         private double _scaleRateX = 1.0;
@@ -146,7 +145,6 @@ namespace WPF.CTG
 
                 _scaleRateY = value;
                 OnPropertyChanged(nameof(ScaleRateY));
-                OnPropertyChanged(nameof(HeightWithScaling));
             }
         }
         private double _scaleRateY = 1.0;
@@ -217,16 +215,6 @@ namespace WPF.CTG
         }
         private double _rightVisibleEdge;
 
-        /// <summary>
-        /// Ширина координатной плоскости.
-        /// </summary>
-        public double WidthWithScaling => _scalableCoordinatePlane.ActualWidth;
-
-        /// <summary>
-        /// Высота координатной плоскости.
-        /// </summary>
-        public double HeightWithScaling => _scalableCoordinatePlane.ActualHeight;
-
         #endregion
 
         #region * Конструктор
@@ -261,9 +249,6 @@ namespace WPF.CTG
             _scalableCoordinatePlane.MouseWheel += mouseWheel;
 
             PropertyChanged += propertyСhanged;
-
-            OnPropertyChanged(nameof(WidthWithScaling));
-            OnPropertyChanged(nameof(HeightWithScaling));
         }
 
         #endregion

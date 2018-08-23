@@ -45,7 +45,7 @@
       <DependentUpon>CanvasViewPort.xaml</DependentUpon>
     </Compile>
     <Compile Include="Converters\DoubleInvertSignConverter.cs" />
-    <Compile Include="Converters\WidthToMaxConverter.cs" />
+    <Compile Include="Converters\AxialDimensionToScrollMaxConverter.cs" />
     <Compile Include="ScalableCoordinatePlane.xaml.cs">
       <DependentUpon>ScalableCoordinatePlane.xaml</DependentUpon>
     </Compile>

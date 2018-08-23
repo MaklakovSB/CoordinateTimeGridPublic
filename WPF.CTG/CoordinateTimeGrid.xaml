@@ -11,7 +11,7 @@
              mc:Ignorable="d">
     <UserControl.Resources>
         <converters:DoubleInvertSignConverter x:Key="disc" />
-        <converters:WidthToMaxConverter x:Key="wtmc" />
+        <converters:AxialDimensionToScrollMaxConverter x:Key="adtsmc" />
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -540,13 +540,24 @@
                    Grid.Row="1"
                    Grid.Column="2"
                    Orientation="Vertical"
-                   Visibility="{Binding VerticalScrollBarVisibility}" />
+                   ViewportSize="{Binding ActualHeight,
+                                          ElementName=_coordinateViewPort}"
+                   Visibility="{Binding VerticalScrollBarVisibility}"
+                   Value="{Binding TransformManager.CanvasTop,
+                                   ElementName=RootUserControl,
+                                   Converter={StaticResource disc}}">
+            <ScrollBar.Maximum>
+                <MultiBinding Converter="{StaticResource adtsmc}">
+                    <Binding ElementName="_scalableCoordinatePlane" Path="ActualHeight" />
+                    <Binding ElementName="_coordinateViewPort" Path="ActualHeight" />
+                </MultiBinding>
+            </ScrollBar.Maximum>
+        </ScrollBar>
 
         <ScrollBar x:Name="_horizontalScrollBar"
                    Grid.Row="2"
                    Grid.Column="1"
                    Orientation="Horizontal"
-                   SmallChange="1"
                    ViewportSize="{Binding ActualWidth,
                                           ElementName=_coordinateViewPort}"
                    Visibility="{Binding HorizontalScrollBarVisibility}"
@@ -554,12 +565,12 @@
                                    ElementName=RootUserControl,
                                    Converter={StaticResource disc}}">
             <ScrollBar.Maximum>
-                <MultiBinding Converter="{StaticResource wtmc}">
-                    <Binding ElementName="RootUserControl" Path="TransformManager.WidthWithScaling" />
-                    <Binding ElementName="RootUserControl" Path="TransformManager.RealWidth" />
+                <MultiBinding Converter="{StaticResource adtsmc}">
+                    <Binding ElementName="_scalableCoordinatePlane" Path="ActualWidth" />
+                    <Binding ElementName="_coordinateViewPort" Path="ActualWidth" />
                 </MultiBinding>
             </ScrollBar.Maximum>
-
         </ScrollBar>
+
     </Grid>
 </UserControl>
