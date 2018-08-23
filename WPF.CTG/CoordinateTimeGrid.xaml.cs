@@ -168,6 +168,9 @@ namespace WPF.CTG
         }
         private TransformManager _transformManager;
 
+        /// <summary>
+        /// Коллекция дочерних элементов.
+        /// </summary>
         public UIElementCollection Children => _scalableCoordinatePlane.Children;
 
         #endregion
