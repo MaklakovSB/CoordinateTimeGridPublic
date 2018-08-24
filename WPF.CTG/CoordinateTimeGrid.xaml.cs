@@ -77,6 +77,28 @@ namespace WPF.CTG
             typeof(CoordinateTimeGrid),
             new PropertyMetadata(0.4));
 
+        /// <summary>
+        /// Attached property.
+        /// Координата по оси X.
+        /// </summary>
+        public static readonly DependencyProperty XProperty = DependencyProperty.RegisterAttached(
+            "X",
+            typeof(double),
+            typeof(CoordinateTimeGrid),
+            new FrameworkPropertyMetadata(0.0, OnXPropertyChange)
+        );
+
+        /// <summary>
+        /// Attached property.
+        /// Координата по оси Y.
+        /// </summary>
+        public static readonly DependencyProperty YProperty = DependencyProperty.RegisterAttached(
+            "Y",
+            typeof(double),
+            typeof(CoordinateTimeGrid),
+            new FrameworkPropertyMetadata(0.0, OnYPropertyChange) //FrameworkPropertyMetadataOptions.AffectsRender)
+        );
+
         #endregion
 
         #region Акцессоры свойств зависимости
@@ -187,7 +209,70 @@ namespace WPF.CTG
 
         #endregion
 
-        #region Обработчики событий изменения свойств зависимости
+        #region Методы прикрепляемых свойств зависимости
+
+        /// <summary>
+        /// Установить значение координаты по оси X.
+        /// </summary>
+        /// <param name="element"></param>
+        /// <param name="value"></param>
+        public static void SetX(UIElement element, double value)
+        {
+            element.SetValue(XProperty, value);
+        }
+
+        /// <summary>
+        /// Получить значение координаты по оси X.
+        /// </summary>
+        /// <param name="element"></param>
+        /// <returns></returns>
+        public static double GetX(UIElement element)
+        {
+            return (double)element.GetValue(XProperty);
+        }
+
+        /// <summary>
+        /// Установить значение координаты по оси Y.
+        /// </summary>
+        /// <param name="element"></param>
+        /// <param name="value"></param>
+        public static void SetY(UIElement element, double value)
+        {
+            element.SetValue(YProperty, value);
+        }
+
+        /// <summary>
+        /// Получить значение координаты по оси Y.
+        /// </summary>
+        /// <param name="element"></param>
+        /// <returns></returns>
+        public static double GetY(UIElement element)
+        {
+            return (double)element.GetValue(YProperty);
+        }
+
+        /// <summary>
+        /// Обработчик изменения координаты по оси X.
+        /// </summary>
+        /// <param name="d"></param>
+        /// <param name="e"></param>
+        private static void OnXPropertyChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            //d.SetCurrentValue(Canvas.LeftProperty, (double)e.NewValue);
+            Canvas.SetLeft((UIElement)d, (double)e.NewValue);
+        }
+
+        /// <summary>
+        /// Обработчик изменения координаты по оси Y.
+        /// </summary>
+        /// <param name="d"></param>
+        /// <param name="e"></param>
+        private static void OnYPropertyChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            //d.SetCurrentValue(Canvas.TopProperty, (double)e.NewValue);
+            Canvas.SetTop((UIElement)d, (double)e.NewValue);
+        }
+
         #endregion
 
         #region Реализация интерфейсов
