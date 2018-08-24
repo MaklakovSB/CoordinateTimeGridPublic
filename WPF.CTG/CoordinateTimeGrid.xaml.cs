@@ -96,7 +96,18 @@ namespace WPF.CTG
             "Y",
             typeof(double),
             typeof(CoordinateTimeGrid),
-            new FrameworkPropertyMetadata(0.0, OnYPropertyChange) //FrameworkPropertyMetadataOptions.AffectsRender)
+            new FrameworkPropertyMetadata(0.0, OnYPropertyChange)
+        );
+
+        /// <summary>
+        /// Attached property.
+        /// Z-индекс.
+        /// </summary>
+        public static readonly DependencyProperty ZIndexProperty = DependencyProperty.RegisterAttached(
+            "ZIndex",
+            typeof(int),
+            typeof(CoordinateTimeGrid),
+            new FrameworkPropertyMetadata(0, OnZIndexPropertyChange)
         );
 
         #endregion
@@ -252,6 +263,26 @@ namespace WPF.CTG
         }
 
         /// <summary>
+        /// Установить значение Z-индекса.
+        /// </summary>
+        /// <param name="element"></param>
+        /// <param name="value"></param>
+        public static void SetZIndex(UIElement element, int value)
+        {
+            element.SetValue(ZIndexProperty, value);
+        }
+
+        /// <summary>
+        /// Получить значение Z-индекса.
+        /// </summary>
+        /// <param name="element"></param>
+        /// <returns></returns>
+        public static int GetZIndex(UIElement element)
+        {
+            return (int)element.GetValue(ZIndexProperty);
+        }
+
+        /// <summary>
         /// Обработчик изменения координаты по оси X.
         /// </summary>
         /// <param name="d"></param>
@@ -271,6 +302,16 @@ namespace WPF.CTG
         {
             //d.SetCurrentValue(Canvas.TopProperty, (double)e.NewValue);
             Canvas.SetTop((UIElement)d, (double)e.NewValue);
+        }
+
+        /// <summary>
+        /// Обработчик изменения Z-индекса.
+        /// </summary>
+        /// <param name="d"></param>
+        /// <param name="e"></param>
+        private static void OnZIndexPropertyChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Panel.SetZIndex((UIElement)d, (int)e.NewValue);
         }
 
         #endregion
