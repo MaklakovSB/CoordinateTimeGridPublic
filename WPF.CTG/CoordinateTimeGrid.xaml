@@ -48,8 +48,10 @@
                                            MarkingGridStrokeThickness="{Binding MarkingGridStrokeThickness,
                                                                                 ElementName=RootUserControl,
                                                                                 Mode=TwoWay}"
-                                           OriginalHeight="1500"
-                                           OriginalWidth="15000"
+                                           OriginalHeight="{Binding OriginalPlaneHeight,
+                                                                    ElementName=RootUserControl}"
+                                           OriginalWidth="{Binding OriginalPlaneWidth,
+                                                                   ElementName=RootUserControl}"
                                            RightVisibleEdge="{Binding TransformManager.RightVisibleEdge,
                                                                       ElementName=RootUserControl}"
                                            ScaleRateX="{Binding TransformManager.ScaleRateX,

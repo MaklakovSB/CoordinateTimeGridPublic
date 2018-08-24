@@ -78,6 +78,24 @@ namespace WPF.CTG
             new PropertyMetadata(0.4));
 
         /// <summary>
+        /// Оригинальная ширина координатной плоскости.
+        /// </summary>
+        public static readonly DependencyProperty OriginalPlaneWidthProperty = DependencyProperty.Register(
+            nameof(OriginalPlaneWidth),
+            typeof(double),
+            typeof(CoordinateTimeGrid),
+            new PropertyMetadata(0.0));
+
+        /// <summary>
+        /// Оригинальная высота координатной плоскости.
+        /// </summary>
+        public static readonly DependencyProperty OriginalPlaneHeightProperty = DependencyProperty.Register(
+            nameof(OriginalPlaneHeight),
+            typeof(double),
+            typeof(CoordinateTimeGrid),
+            new PropertyMetadata(0.0));
+
+        /// <summary>
         /// Attached property.
         /// Координата по оси X.
         /// </summary>
@@ -175,6 +193,24 @@ namespace WPF.CTG
         {
             get { return (double)GetValue(MarkingGridStrokeThicknessProperty); }
             set { SetValue(MarkingGridStrokeThicknessProperty, value); }
+        }
+
+        /// <summary>
+        /// Оригинальная ширина координатной плоскости.
+        /// </summary>
+        public double OriginalPlaneWidth
+        {
+            get { return (double)GetValue(OriginalPlaneWidthProperty); }
+            set { SetValue(OriginalPlaneWidthProperty, value); }
+        }
+
+        /// <summary>
+        /// Оригинальная высота координатной плоскости.
+        /// </summary>
+        public double OriginalPlaneHeight
+        {
+            get { return (double)GetValue(OriginalPlaneHeightProperty); }
+            set { SetValue(OriginalPlaneHeightProperty, value); }
         }
 
         #endregion
