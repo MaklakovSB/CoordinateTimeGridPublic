@@ -246,6 +246,9 @@ namespace WPF.CTG
 
         #region * Конструкторы
 
+        /// <summary>
+        /// * Конструктор
+        /// </summary>
         public CoordinateTimeGrid()
         {
             DataContext = this;
