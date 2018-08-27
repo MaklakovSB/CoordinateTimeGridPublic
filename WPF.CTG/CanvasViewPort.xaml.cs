@@ -13,25 +13,7 @@ namespace WPF.CTG
         {
             DataContext = this;
             InitializeComponent();
-            //SizeChanged += HandleSizeChanged;
         }
-
-        //public static DependencyProperty RealWidthProperty = DependencyProperty.Register(
-        //    nameof(RealWidth), 
-        //    typeof(double),
-        //    typeof(CanvasViewPort),
-        //    new PropertyMetadata(500D));
-
-        //public double RealWidth
-        //{
-        //    get { return (double)GetValue(RealWidthProperty); }
-        //    set { SetValue(RealWidthProperty, value); }
-        //}
-
-        //private void HandleSizeChanged(object sender, SizeChangedEventArgs e)
-        //{
-        //    RealWidth = e.NewSize.Width;
-        //}
 
         #region Реализация интерфейсов
 
