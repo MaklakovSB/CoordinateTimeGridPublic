@@ -46,6 +46,9 @@
     </Compile>
     <Compile Include="Converters\DoubleInvertSignConverter.cs" />
     <Compile Include="Converters\AxialDimensionToScrollMaxConverter.cs" />
+    <Compile Include="RulerPanel.xaml.cs">
+      <DependentUpon>RulerPanel.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ScalableCoordinatePlane.xaml.cs">
       <DependentUpon>ScalableCoordinatePlane.xaml</DependentUpon>
     </Compile>
@@ -63,6 +66,10 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="CanvasViewPort.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="RulerPanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -25,6 +25,68 @@
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
 
+        <Grid Grid.Row="0"
+              Grid.Column="0"
+              Background="{Binding Background,
+                                   ElementName=_scalableCoordinatePlane}" />
+
+        <Canvas x:Name="horizontalRulerViewPort"
+                Grid.Row="0"
+                Grid.Column="1"
+                Height="18"
+                Background="White"
+                ClipToBounds="True"
+                SnapsToDevicePixels="True">
+            <local:RulerPanel x:Name="horizontalRulerPanel"
+                    Orientation="Horizontal"
+                    Canvas.Left="{Binding TransformManager.CanvasLeft,
+                                          ElementName=RootUserControl}"
+                    Canvas.Top="0"
+                    Width="{Binding Width,
+                                    ElementName=_scalableCoordinatePlane}"
+                    Height="18"
+                    Background="{Binding Background,
+                                         ElementName=_scalableCoordinatePlane}" />
+        </Canvas>
+
+        <ScrollBar x:Name="_verticalScrollBar"
+                   Grid.Row="0"
+                   Grid.RowSpan="2"
+                   Grid.Column="2"
+                   Orientation="Vertical"
+                   ViewportSize="{Binding ActualHeight,
+                                          ElementName=_coordinateViewPort}"
+                   Visibility="{Binding VerticalScrollBarVisibility}"
+                   Value="{Binding TransformManager.CanvasTop,
+                                   ElementName=RootUserControl,
+                                   Converter={StaticResource disc}}">
+            <ScrollBar.Maximum>
+                <MultiBinding Converter="{StaticResource adtsmc}">
+                    <Binding ElementName="_scalableCoordinatePlane" Path="ActualHeight" />
+                    <Binding ElementName="_coordinateViewPort" Path="ActualHeight" />
+                </MultiBinding>
+            </ScrollBar.Maximum>
+        </ScrollBar>
+
+        <Canvas x:Name="verticalRulerViewPort"
+                Grid.Row="1"
+                Grid.Column="0"
+                Width="18"
+                Background="White"
+                ClipToBounds="True"
+                SnapsToDevicePixels="True">
+            <local:RulerPanel x:Name="verticalRulerPanel"
+                    Orientation="Vertical"
+                    Canvas.Left="0"
+                    Canvas.Top="{Binding TransformManager.CanvasTop,
+                                         ElementName=RootUserControl}"
+                    Width="18"
+                    Height="{Binding Height,
+                                     ElementName=_scalableCoordinatePlane}"
+                    Background="{Binding Background,
+                                         ElementName=_scalableCoordinatePlane}" />
+        </Canvas>
+
         <Canvas x:Name="_coordinateViewPort"
                 Grid.Row="1"
                 Grid.Column="1"
@@ -211,27 +273,10 @@
 
         </Canvas>
 
-        <ScrollBar x:Name="_verticalScrollBar"
-                   Grid.Row="1"
-                   Grid.Column="2"
-                   Orientation="Vertical"
-                   ViewportSize="{Binding ActualHeight,
-                                          ElementName=_coordinateViewPort}"
-                   Visibility="{Binding VerticalScrollBarVisibility}"
-                   Value="{Binding TransformManager.CanvasTop,
-                                   ElementName=RootUserControl,
-                                   Converter={StaticResource disc}}">
-            <ScrollBar.Maximum>
-                <MultiBinding Converter="{StaticResource adtsmc}">
-                    <Binding ElementName="_scalableCoordinatePlane" Path="ActualHeight" />
-                    <Binding ElementName="_coordinateViewPort" Path="ActualHeight" />
-                </MultiBinding>
-            </ScrollBar.Maximum>
-        </ScrollBar>
-
         <ScrollBar x:Name="_horizontalScrollBar"
                    Grid.Row="2"
-                   Grid.Column="1"
+                   Grid.Column="0"
+                   Grid.ColumnSpan="2"
                    Orientation="Horizontal"
                    ViewportSize="{Binding ActualWidth,
                                           ElementName=_coordinateViewPort}"

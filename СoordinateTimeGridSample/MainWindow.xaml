@@ -25,11 +25,11 @@
                                 IsBlockingScaleX="False"
                                 IsBlockingScaleY="False"
                                 MarkingGridBrush="LawnGreen"
-                                OriginalPlaneWidth="15000"
-                                OriginalPlaneHeight="1500"
                                 MarkingGridStrokeThickness="{Binding Path=Value,
                                                                      ElementName=sliderStrokeThickness,
                                                                      Mode=TwoWay}"
+                                OriginalPlaneHeight="1500"
+                                OriginalPlaneWidth="15000"
                                 VerticalScrollBarVisibility="Visible">
 
             <Ellipse Width="500"
