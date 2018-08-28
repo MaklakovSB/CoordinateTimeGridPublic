@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -24,9 +25,37 @@ namespace WPF.CTG
         /// </summary>
         public const string HorizontalLine = "HorizontalLine";
 
+        /// <summary>
+        /// Зарезервированное имя вертикальной крайней линии разметки.
+        /// </summary>
+        public const string VerticalEdgeLine = "VerticalEdgeLine";
+
+        /// <summary>
+        /// Зарезервированное имя горизонтальной крайней линии разметки.
+        /// </summary>
+        public const string HorizontalEdgeLine = "HorizontalEdgeLine";
+
         #endregion
 
         #region Свойства зависимости
+
+        /// <summary>
+        /// Оригинальная высота координатной плоскости, для которой предназначена данная линейка.
+        /// </summary>
+        public static readonly DependencyProperty OriginalHeightProperty = DependencyProperty.Register(
+            nameof(OriginalHeight),
+            typeof(double),
+            typeof(RulerPanel),
+            new PropertyMetadata(0.0, OnOriginalHeightPropertyChange));
+
+        /// <summary>
+        /// Оригинальная ширина координатной плоскости, для которой предназначена данная линейка.
+        /// </summary>
+        public static readonly DependencyProperty OriginalWidthProperty = DependencyProperty.Register(
+            nameof(OriginalWidth),
+            typeof(double),
+            typeof(RulerPanel),
+            new PropertyMetadata(0.0, OnOriginalWidthPropertyChange));
 
         /// <summary>
         /// Цвет кисти разметочной сетки.
@@ -64,9 +93,63 @@ namespace WPF.CTG
             typeof(RulerPanel),
             new PropertyMetadata(1.0, OnScaleRateYPropertyChange));
 
+        /// <summary>
+        /// Верхняя видимая граница координатной плоскости.
+        /// </summary>
+        public static readonly DependencyProperty TopVisibleEdgeProperty = DependencyProperty.Register(
+            nameof(TopVisibleEdge),
+            typeof(double),
+            typeof(RulerPanel),
+            new PropertyMetadata(0.0));
+
+        /// <summary>
+        /// Нижняя видимая граница координатной плоскости.
+        /// </summary>
+        public static readonly DependencyProperty BottomVisibleEdgeProperty = DependencyProperty.Register(
+            nameof(BottomVisibleEdge),
+            typeof(double),
+            typeof(RulerPanel),
+            new PropertyMetadata(0.0));
+
+        /// <summary>
+        /// Левая видимая граница координатной плоскости.
+        /// </summary>
+        public static readonly DependencyProperty LeftVisibleEdgeProperty = DependencyProperty.Register(
+            nameof(LeftVisibleEdge),
+            typeof(double),
+            typeof(RulerPanel),
+            new PropertyMetadata(0.0));
+
+        /// <summary>
+        /// Правая видимая граница координатной плоскости.
+        /// </summary>
+        public static readonly DependencyProperty RightVisibleEdgeProperty = DependencyProperty.Register(
+            nameof(RightVisibleEdge),
+            typeof(double),
+            typeof(RulerPanel),
+            new PropertyMetadata(0.0));
+
         #endregion
 
         #region Акцессоры свойств зависимости
+
+        /// <summary>
+        /// Оригинальная ширина.
+        /// </summary>
+        public double OriginalWidth
+        {
+            get { return (double)GetValue(OriginalWidthProperty); }
+            set { SetValue(OriginalWidthProperty, value); }
+        }
+
+        /// <summary>
+        /// Оригинальная высота.
+        /// </summary>
+        public double OriginalHeight
+        {
+            get { return (double)GetValue(OriginalHeightProperty); }
+            set { SetValue(OriginalHeightProperty, value); }
+        }
 
         /// <summary>
         /// Цвет кисти разметочной сетки
@@ -104,48 +187,45 @@ namespace WPF.CTG
             set { SetValue(ScaleRateYProperty, value); }
         }
 
-        /////// <summary>
-        /////// Верхняя видимая граница координатной плоскости.
-        /////// </summary>
-        ////public double TopVisibleEdge
-        ////{
-        ////    get { return (double)GetValue(TopVisibleEdgeProperty); }
-        ////    set { SetValue(TopVisibleEdgeProperty, value); }
-        ////}
+        /// <summary>
+        /// Верхняя видимая граница координатной плоскости.
+        /// </summary>
+        public double TopVisibleEdge
+        {
+            get { return (double)GetValue(TopVisibleEdgeProperty); }
+            set { SetValue(TopVisibleEdgeProperty, value); }
+        }
 
-        /////// <summary>
-        /////// Нижняя видимая граница координатной плоскости.
-        /////// </summary>
-        ////public double BottomVisibleEdge
-        ////{
-        ////    get { return (double)GetValue(BottomVisibleEdgeProperty); }
-        ////    set { SetValue(BottomVisibleEdgeProperty, value); }
-        ////}
+        /// <summary>
+        /// Нижняя видимая граница координатной плоскости.
+        /// </summary>
+        public double BottomVisibleEdge
+        {
+            get { return (double)GetValue(BottomVisibleEdgeProperty); }
+            set { SetValue(BottomVisibleEdgeProperty, value); }
+        }
 
-        /////// <summary>
-        /////// Левая видимая граница координатной плоскости.
-        /////// </summary>
-        ////public double LeftVisibleEdge
-        ////{
-        ////    get { return (double)GetValue(LeftVisibleEdgeProperty); }
-        ////    set { SetValue(LeftVisibleEdgeProperty, value); }
-        ////}
+        /// <summary>
+        /// Левая видимая граница координатной плоскости.
+        /// </summary>
+        public double LeftVisibleEdge
+        {
+            get { return (double)GetValue(LeftVisibleEdgeProperty); }
+            set { SetValue(LeftVisibleEdgeProperty, value); }
+        }
 
-        /////// <summary>
-        /////// Правая видимая граница координатной плоскости.
-        /////// </summary>
-        ////public double RightVisibleEdge
-        ////{
-        ////    get { return (double)GetValue(RightVisibleEdgeProperty); }
-        ////    set { SetValue(RightVisibleEdgeProperty, value); }
-        ////}
+        /// <summary>
+        /// Правая видимая граница координатной плоскости.
+        /// </summary>
+        public double RightVisibleEdge
+        {
+            get { return (double)GetValue(RightVisibleEdgeProperty); }
+            set { SetValue(RightVisibleEdgeProperty, value); }
+        }
 
         #endregion
 
         #region Приватные поля
-
-        private double _originalHeight;
-        private double _originalWidth;
 
         private double _scaleRateX = 1;
         private double _scaleRateY = 1;
@@ -218,8 +298,22 @@ namespace WPF.CTG
         /// </summary>
         private void MarkingGridInitialize(double originalWidth, double originalHeight)
         {
+            if (Orientation == Orientation.Vertical)
+            {
+                VerticalMarupInitialize(originalHeight);
+            }
+            else if (Orientation == Orientation.Horizontal)
+            {
+                HorizontalMarupInitialize(originalWidth);
+            }
+        }
+
+        /// <summary>
+        /// Инициализация горизонтальной разметки.
+        /// </summary>
+        private void HorizontalMarupInitialize(double originalWidth)
+        {
             var vertCount = originalWidth / 10;
-            var horizCount = originalHeight / 10;
 
             for (var x = 0; x < vertCount; x++)
             {
@@ -228,19 +322,9 @@ namespace WPF.CTG
                     Name = nameof(VerticalLine),
                     X1 = x * 10,
                     X2 = x * 10,
+                    Y1 = Height - 6,
+                    Y2 = Height
                 };
-
-                //Binding bindVisibleTop = new Binding();
-                //bindVisibleTop.Source = this;
-                //bindVisibleTop.Path = new PropertyPath(nameof(TopVisibleEdge));
-                //bindVisibleTop.Mode = BindingMode.OneWay;
-                //vLine.SetBinding(Line.Y1Property, bindVisibleTop);
-
-                //Binding bindVisibleBottom = new Binding();
-                //bindVisibleBottom.Source = this;
-                //bindVisibleBottom.Path = new PropertyPath(nameof(BottomVisibleEdge));
-                //bindVisibleBottom.Mode = BindingMode.OneWay;
-                //vLine.SetBinding(Line.Y2Property, bindVisibleBottom);
 
                 Binding bindMarkingGridBrush = new Binding();
                 bindMarkingGridBrush.Source = this;
@@ -248,14 +332,44 @@ namespace WPF.CTG
                 bindMarkingGridBrush.Mode = BindingMode.OneWay;
                 vLine.SetBinding(Shape.StrokeProperty, bindMarkingGridBrush);
 
-                Binding bindMarkingGridStrokeThickness = new Binding();
-                bindMarkingGridStrokeThickness.Source = this;
-                bindMarkingGridStrokeThickness.Path = new PropertyPath(nameof(MarkingGridStrokeThickness));
-                bindMarkingGridStrokeThickness.Mode = BindingMode.OneWay;
-                vLine.SetBinding(Shape.StrokeThicknessProperty, bindMarkingGridStrokeThickness);
+                vLine.SetCurrentValue(Shape.StrokeThicknessProperty, (double)1);
 
                 Children.Add(vLine);
             }
+
+            var hLine = new Line()
+            {
+                Name = nameof(HorizontalEdgeLine),
+                X1 = 0,
+                X2 = originalWidth,
+                Y1 = Height - 1,
+                Y2 = Height - 1
+            };
+
+            hLine.SetCurrentValue(Shape.StrokeThicknessProperty, (double)1);
+            hLine.SetCurrentValue(Shape.StrokeProperty, Brushes.Chartreuse);
+
+            Binding bindVisibleLeft = new Binding();
+            bindVisibleLeft.Source = this;
+            bindVisibleLeft.Path = new PropertyPath(nameof(LeftVisibleEdge));
+            bindVisibleLeft.Mode = BindingMode.OneWay;
+            hLine.SetBinding(Line.X1Property, bindVisibleLeft);
+
+            Binding bindVisibleRight = new Binding();
+            bindVisibleRight.Source = this;
+            bindVisibleRight.Path = new PropertyPath(nameof(RightVisibleEdge));
+            bindVisibleRight.Mode = BindingMode.OneWay;
+            hLine.SetBinding(Line.X2Property, bindVisibleRight);
+
+            Children.Add(hLine);
+        }
+
+        /// <summary>
+        /// Инициализация вертикальной разметки.
+        /// </summary>
+        private void VerticalMarupInitialize(double originalHeight)
+        {
+            var horizCount = originalHeight / 10;
 
             for (var y = 0; y < horizCount; y++)
             {
@@ -264,19 +378,9 @@ namespace WPF.CTG
                     Name = nameof(HorizontalLine),
                     Y1 = y * 10,
                     Y2 = y * 10,
+                    X1 = Width - 6,
+                    X2 = Width,
                 };
-
-                //Binding bindVisibleLeft = new Binding();
-                //bindVisibleLeft.Source = this;
-                //bindVisibleLeft.Path = new PropertyPath(nameof(LeftVisibleEdge));
-                //bindVisibleLeft.Mode = BindingMode.OneWay;
-                //hLine.SetBinding(Line.X1Property, bindVisibleLeft);
-
-                //Binding bindVisibleRight = new Binding();
-                //bindVisibleRight.Source = this;
-                //bindVisibleRight.Path = new PropertyPath(nameof(RightVisibleEdge));
-                //bindVisibleRight.Mode = BindingMode.OneWay;
-                //hLine.SetBinding(Line.X2Property, bindVisibleRight);
 
                 Binding bindMarkingGridBrush = new Binding();
                 bindMarkingGridBrush.Source = this;
@@ -284,14 +388,36 @@ namespace WPF.CTG
                 bindMarkingGridBrush.Mode = BindingMode.OneWay;
                 hLine.SetBinding(Shape.StrokeProperty, bindMarkingGridBrush);
 
-                Binding bindMarkingGridStrokeThickness = new Binding();
-                bindMarkingGridStrokeThickness.Source = this;
-                bindMarkingGridStrokeThickness.Path = new PropertyPath(nameof(MarkingGridStrokeThickness));
-                bindMarkingGridStrokeThickness.Mode = BindingMode.OneWay;
-                hLine.SetBinding(Shape.StrokeThicknessProperty, bindMarkingGridStrokeThickness);
+                hLine.SetCurrentValue(Shape.StrokeThicknessProperty, (double)1);
 
                 Children.Add(hLine);
             }
+
+            var vLine = new Line()
+            {
+                Name = nameof(VerticalEdgeLine),
+                X1 = Width -1,
+                X2 = Width -1,
+                Y1 = 0,
+                Y2 = originalHeight
+            };
+
+            vLine.SetCurrentValue(Shape.StrokeThicknessProperty, (double)1);
+            vLine.SetCurrentValue(Shape.StrokeProperty, Brushes.Chartreuse);
+
+            Binding bindVisibleTop = new Binding();
+            bindVisibleTop.Source = this;
+            bindVisibleTop.Path = new PropertyPath(nameof(TopVisibleEdge));
+            bindVisibleTop.Mode = BindingMode.OneWay;
+            vLine.SetBinding(Line.Y1Property, bindVisibleTop);
+
+            Binding bindVisibleBottom = new Binding();
+            bindVisibleBottom.Source = this;
+            bindVisibleBottom.Path = new PropertyPath(nameof(BottomVisibleEdge));
+            bindVisibleBottom.Mode = BindingMode.OneWay;
+            vLine.SetBinding(Line.Y2Property, bindVisibleBottom);
+
+            Children.Add(vLine);
         }
 
         /// <summary>
@@ -307,25 +433,27 @@ namespace WPF.CTG
             // Сохраняем новый коэффициент масштабирования.
             _scaleRateX = newValue;
 
-            // Масштабируем содержимое координатной плоскости.
-            if (Children.Count > 0)
+            if (Orientation == Orientation.Horizontal)
             {
-                foreach (FrameworkElement child in Children)
+                // Масштабируем разметку.
+                if (Children.Count > 0)
                 {
-                    if (child.Name == nameof(VerticalLine))
+                    foreach (FrameworkElement child in Children)
                     {
-                        // Масштабируем координаты вертикальных линий разметки.
-                        var vertLine = (Line)child;
-                        vertLine.X1 *= ScaleDeltaX;
-                        vertLine.X2 *= ScaleDeltaX;
+                        if (child.Name == nameof(VerticalLine))
+                        {
+                            // Масштабируем координаты вертикальных линий разметки.
+                            var vertLine = (Line) child;
+                            vertLine.X1 *= ScaleDeltaX;
+                            vertLine.X2 *= ScaleDeltaX;
+                        }
                     }
-                    else
-                    {
-                        // Масштабируем размеры содержимого.
-                        child.Width *= ScaleDeltaX;
 
-                        // Масштабируем координаты содержимого.
-                        child.SetCurrentValue(Canvas.LeftProperty, Canvas.GetLeft(child) * ScaleDeltaX);
+                    // Крайнюю линию.
+                    var hline = Children.OfType<Line>().FirstOrDefault(x => x.Name == nameof(HorizontalEdgeLine));
+                    if (hline != null)
+                    {
+                        hline.X2 *= ScaleDeltaX;
                     }
                 }
             }
@@ -344,25 +472,27 @@ namespace WPF.CTG
             // Сохраняем новый коэффициент масштабирования.
             _scaleRateY = newValue;
 
-            // Масштабируем содержимое координатной плоскости.
-            if (Children.Count > 0)
+            if (Orientation == Orientation.Vertical)
             {
-                foreach (FrameworkElement child in Children)
+                // Масштабируем содержимое координатной плоскости.
+                if (Children.Count > 0)
                 {
-                    if (child.Name == nameof(HorizontalLine))
+                    foreach (FrameworkElement child in Children)
                     {
-                        // Масштабируем координаты горизонтальных линий разметки.
-                        var horizontLine = (Line)child;
-                        horizontLine.Y1 *= ScaleDeltaY;
-                        horizontLine.Y2 *= ScaleDeltaY;
+                        if (child.Name == nameof(HorizontalLine))
+                        {
+                            // Масштабируем координаты горизонтальных линий разметки.
+                            var horizontLine = (Line) child;
+                            horizontLine.Y1 *= ScaleDeltaY;
+                            horizontLine.Y2 *= ScaleDeltaY;
+                        }
                     }
-                    else
-                    {
-                        // Масштабируем размеры содержимого.
-                        child.Height *= ScaleDeltaY;
 
-                        // Масштабируем координаты содержимого.
-                        child.SetCurrentValue(Canvas.TopProperty, Canvas.GetTop(child) * ScaleDeltaY);
+                    // Крайнюю линию.
+                    var vline = Children.OfType<Line>().FirstOrDefault(x => x.Name == nameof(VerticalEdgeLine));
+                    if (vline != null)
+                    {
+                        vline.Y2 *= ScaleDeltaY;
                     }
                 }
             }
@@ -370,22 +500,41 @@ namespace WPF.CTG
 
         #endregion
 
-        #region Обработчики событий
+        #region Обработчики событий изменения свойств зависимости
 
         /// <summary>
-        /// Загрузка контрола.
+        /// Изменение инициальной высоты после инициализации не допустимо.
         /// </summary>
-        /// <param name="sender"></param>
+        /// <param name="d"></param>
         /// <param name="e"></param>
-        private void Canvas_Loaded(object sender, RoutedEventArgs e)
+        private static void OnOriginalHeightPropertyChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            // Инициализация разметочной сетки.
-            //MarkingGridInitialize();
+            var obj = d as RulerPanel;
+            if (obj != null)
+            {
+                if (obj.Orientation == Orientation.Vertical)
+                {
+                    obj.MarkingGridInitialize(obj.OriginalWidth, obj.OriginalHeight);
+                }
+            }
         }
 
-        #endregion
-
-        #region Обработчики событий изменения свойств зависимости
+        /// <summary>
+        /// Изменение инициальной ширины после инициализации не допустимо.
+        /// </summary>
+        /// <param name="d"></param>
+        /// <param name="e"></param>
+        private static void OnOriginalWidthPropertyChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var obj = d as RulerPanel;
+            if (obj != null)
+            {
+                if (obj.Orientation == Orientation.Horizontal)
+                {
+                    obj.MarkingGridInitialize(obj.OriginalWidth, obj.OriginalHeight);
+                }
+            }
+        }
 
         /// <summary>
         /// Изменение коэффициента масштаба по оси X.
