@@ -300,18 +300,18 @@ namespace WPF.CTG
         {
             if (Orientation == Orientation.Vertical)
             {
-                VerticalMarupInitialize(originalHeight);
+                VerticalMarcupInitialize(originalHeight);
             }
             else if (Orientation == Orientation.Horizontal)
             {
-                HorizontalMarupInitialize(originalWidth);
+                HorizontalMarcupInitialize(originalWidth);
             }
         }
 
         /// <summary>
         /// Инициализация горизонтальной разметки.
         /// </summary>
-        private void HorizontalMarupInitialize(double originalWidth)
+        private void HorizontalMarcupInitialize(double originalWidth)
         {
             var vertCount = originalWidth / 10;
 
@@ -340,8 +340,6 @@ namespace WPF.CTG
             var hLine = new Line()
             {
                 Name = nameof(HorizontalEdgeLine),
-                X1 = 0,
-                X2 = originalWidth,
                 Y1 = Height - 1,
                 Y2 = Height - 1
             };
@@ -367,7 +365,7 @@ namespace WPF.CTG
         /// <summary>
         /// Инициализация вертикальной разметки.
         /// </summary>
-        private void VerticalMarupInitialize(double originalHeight)
+        private void VerticalMarcupInitialize(double originalHeight)
         {
             var horizCount = originalHeight / 10;
 
@@ -398,8 +396,8 @@ namespace WPF.CTG
                 Name = nameof(VerticalEdgeLine),
                 X1 = Width -1,
                 X2 = Width -1,
-                Y1 = 0,
-                Y2 = originalHeight
+                //Y1 = 0,
+                //Y2 = originalHeight
             };
 
             vLine.SetCurrentValue(Shape.StrokeThicknessProperty, (double)1);
@@ -447,13 +445,14 @@ namespace WPF.CTG
                             vertLine.X1 *= ScaleDeltaX;
                             vertLine.X2 *= ScaleDeltaX;
                         }
-                    }
+                        else
+                        {
+                            // Масштабируем размеры содержимого.
+                            child.Width *= ScaleDeltaX;
 
-                    // Крайнюю линию.
-                    var hline = Children.OfType<Line>().FirstOrDefault(x => x.Name == nameof(HorizontalEdgeLine));
-                    if (hline != null)
-                    {
-                        hline.X2 *= ScaleDeltaX;
+                            // Масштабируем координаты содержимого.
+                            child.SetCurrentValue(Canvas.LeftProperty, Canvas.GetLeft(child) * ScaleDeltaX);
+                        }
                     }
                 }
             }
@@ -486,13 +485,14 @@ namespace WPF.CTG
                             horizontLine.Y1 *= ScaleDeltaY;
                             horizontLine.Y2 *= ScaleDeltaY;
                         }
-                    }
+                        else
+                        {
+                            // Масштабируем размеры содержимого.
+                            child.Height *= ScaleDeltaY;
 
-                    // Крайнюю линию.
-                    var vline = Children.OfType<Line>().FirstOrDefault(x => x.Name == nameof(VerticalEdgeLine));
-                    if (vline != null)
-                    {
-                        vline.Y2 *= ScaleDeltaY;
+                            // Масштабируем координаты содержимого.
+                            child.SetCurrentValue(Canvas.TopProperty, Canvas.GetTop(child) * ScaleDeltaY);
+                        }
                     }
                 }
             }

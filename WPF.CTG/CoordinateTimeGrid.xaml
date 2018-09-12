@@ -8,7 +8,8 @@
              x:Name="RootUserControl"
              d:DesignHeight="1500"
              d:DesignWidth="1500"
-             mc:Ignorable="d">
+             mc:Ignorable="d" 
+             SnapsToDevicePixels="True">
     <UserControl.Resources>
         <converters:DoubleInvertSignConverter x:Key="disc" />
         <converters:AxialDimensionToScrollMaxConverter x:Key="adtsmc" />
@@ -28,14 +29,15 @@
         <Grid Grid.Row="0"
               Grid.Column="0"
               Background="{Binding Background,
-                                   ElementName=_scalableCoordinatePlane}" />
+                                   ElementName=_coordinateViewPort}" />
 
         <Canvas x:Name="horizontalRulerViewPort"
                 Grid.Row="0"
                 Grid.Column="1"
                 Height="{Binding Height,
                                  ElementName=horizontalRulerPanel}"
-                Background="White"
+                Background="{Binding Background,
+                                     ElementName=_coordinateViewPort}"
                 ClipToBounds="True"
                 SnapsToDevicePixels="True">
             <local:RulerPanel x:Name="horizontalRulerPanel"
@@ -45,12 +47,13 @@
                               Width="{Binding Width,
                                               ElementName=_scalableCoordinatePlane}"
                               Height="20"
-                              Background="{Binding Background,
-                                                   ElementName=_scalableCoordinatePlane}"
                               BottomVisibleEdge="{Binding TransformManager.BottomVisibleEdge,
                                                           ElementName=RootUserControl}"
                               LeftVisibleEdge="{Binding TransformManager.LeftVisibleEdge,
                                                         ElementName=RootUserControl}"
+                              MarkingGridBrush="{Binding MarkingGridBrush,
+                                                         ElementName=RootUserControl,
+                                                         Mode=TwoWay}"
                               Orientation="Horizontal"
                               OriginalWidth="{Binding OriginalPlaneWidth,
                                                       ElementName=RootUserControl}"
@@ -59,10 +62,7 @@
                               ScaleRateX="{Binding TransformManager.ScaleRateX,
                                                    ElementName=RootUserControl}"
                               TopVisibleEdge="{Binding TransformManager.TopVisibleEdge,
-                                                       ElementName=RootUserControl}" 
-                              MarkingGridBrush="{Binding MarkingGridBrush,
-                                                                      ElementName=RootUserControl,
-                                                                      Mode=TwoWay}"/>
+                                                       ElementName=RootUserControl}" />
         </Canvas>
 
         <ScrollBar x:Name="_verticalScrollBar"
@@ -89,7 +89,8 @@
                 Grid.Column="0"
                 Width="{Binding Width,
                                 ElementName=verticalRulerPanel}"
-                Background="White"
+                Background="{Binding Background,
+                                     ElementName=_coordinateViewPort}"
                 ClipToBounds="True"
                 SnapsToDevicePixels="True">
             <local:RulerPanel x:Name="verticalRulerPanel"
@@ -99,12 +100,13 @@
                               Width="20"
                               Height="{Binding Height,
                                                ElementName=_scalableCoordinatePlane}"
-                              Background="{Binding Background,
-                                                   ElementName=_scalableCoordinatePlane}"
                               BottomVisibleEdge="{Binding TransformManager.BottomVisibleEdge,
                                                           ElementName=RootUserControl}"
                               LeftVisibleEdge="{Binding TransformManager.LeftVisibleEdge,
                                                         ElementName=RootUserControl}"
+                              MarkingGridBrush="{Binding MarkingGridBrush,
+                                                         ElementName=RootUserControl,
+                                                         Mode=TwoWay}"
                               Orientation="Vertical"
                               OriginalHeight="{Binding OriginalPlaneHeight,
                                                        ElementName=RootUserControl}"
@@ -113,16 +115,13 @@
                               ScaleRateY="{Binding TransformManager.ScaleRateY,
                                                    ElementName=RootUserControl}"
                               TopVisibleEdge="{Binding TransformManager.TopVisibleEdge,
-                                                       ElementName=RootUserControl}" 
-                              MarkingGridBrush="{Binding MarkingGridBrush,
-                                                                      ElementName=RootUserControl,
-                                                                      Mode=TwoWay}"/>
+                                                       ElementName=RootUserControl}" />
         </Canvas>
 
         <Canvas x:Name="_coordinateViewPort"
                 Grid.Row="1"
                 Grid.Column="1"
-                Background="Black"
+                Background="{Binding Background, ElementName=RootUserControl}"
                 ClipToBounds="True"
                 SnapsToDevicePixels="True">
 
@@ -131,11 +130,7 @@
                                                                  ElementName=RootUserControl}"
                                            Canvas.Top="{Binding TransformManager.CanvasTop,
                                                                 ElementName=RootUserControl}"
-                                           Background="#F03E3E3E"
-                                           BottomVisibleEdge="{Binding TransformManager.BottomVisibleEdge,
-                                                                       ElementName=RootUserControl}"
-                                           LeftVisibleEdge="{Binding TransformManager.LeftVisibleEdge,
-                                                                     ElementName=RootUserControl}"
+
                                            MarkingGridBrush="{Binding MarkingGridBrush,
                                                                       ElementName=RootUserControl,
                                                                       Mode=TwoWay}"
@@ -146,15 +141,12 @@
                                                                     ElementName=RootUserControl}"
                                            OriginalWidth="{Binding OriginalPlaneWidth,
                                                                    ElementName=RootUserControl}"
-                                           RightVisibleEdge="{Binding TransformManager.RightVisibleEdge,
-                                                                      ElementName=RootUserControl}"
+
                                            ScaleRateX="{Binding TransformManager.ScaleRateX,
                                                                 ElementName=RootUserControl}"
                                            ScaleRateY="{Binding TransformManager.ScaleRateY,
                                                                 ElementName=RootUserControl}"
-                                           SnapsToDevicePixels="True"
-                                           TopVisibleEdge="{Binding TransformManager.TopVisibleEdge,
-                                                                    ElementName=RootUserControl}" />
+                                           SnapsToDevicePixels="True" />
 
             <Grid x:Name="_debugInfo"
                   Canvas.Left="10"

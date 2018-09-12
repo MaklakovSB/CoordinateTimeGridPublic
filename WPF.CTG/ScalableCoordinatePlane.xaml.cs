@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -53,7 +54,7 @@ namespace WPF.CTG
             nameof(MarkingGridBrush),
             typeof(Brush),
             typeof(ScalableCoordinatePlane),
-            new PropertyMetadata(Brushes.Transparent));
+            new PropertyMetadata(Brushes.Transparent, OnMarkingGridBrushPropertyChange));
 
         /// <summary>
         /// Толщина линий разметочной сетки.
@@ -62,7 +63,7 @@ namespace WPF.CTG
             nameof(MarkingGridStrokeThickness),
             typeof(double),
             typeof(ScalableCoordinatePlane),
-            new PropertyMetadata(0.4));
+            new PropertyMetadata(0.4, OnMarkingGridStrokeThicknessPropertyChange));
 
         /// <summary>
         /// Коэффициент масштаба по оси X.
@@ -81,42 +82,6 @@ namespace WPF.CTG
             typeof(double),
             typeof(ScalableCoordinatePlane),
             new PropertyMetadata(1.0, OnScaleRateYPropertyChange));
-
-        /// <summary>
-        /// Верхняя видимая граница координатной плоскости.
-        /// </summary>
-        public static readonly DependencyProperty TopVisibleEdgeProperty = DependencyProperty.Register(
-            nameof(TopVisibleEdge),
-            typeof(double),
-            typeof(ScalableCoordinatePlane),
-            new PropertyMetadata(0.0));
-
-        /// <summary>
-        /// Нижняя видимая граница координатной плоскости.
-        /// </summary>
-        public static readonly DependencyProperty BottomVisibleEdgeProperty = DependencyProperty.Register(
-            nameof(BottomVisibleEdge),
-            typeof(double),
-            typeof(ScalableCoordinatePlane),
-            new PropertyMetadata(0.0));
-
-        /// <summary>
-        /// Левая видимая граница координатной плоскости.
-        /// </summary>
-        public static readonly DependencyProperty LeftVisibleEdgeProperty = DependencyProperty.Register(
-            nameof(LeftVisibleEdge),
-            typeof(double),
-            typeof(ScalableCoordinatePlane),
-            new PropertyMetadata(0.0));
-
-        /// <summary>
-        /// Правая видимая граница координатной плоскости.
-        /// </summary>
-        public static readonly DependencyProperty RightVisibleEdgeProperty = DependencyProperty.Register(
-            nameof(RightVisibleEdge),
-            typeof(double),
-            typeof(ScalableCoordinatePlane),
-            new PropertyMetadata(0.0));
 
         #endregion
 
@@ -185,42 +150,6 @@ namespace WPF.CTG
             set { SetValue(ScaleRateYProperty, value); }
         }
 
-        /// <summary>
-        /// Верхняя видимая граница координатной плоскости.
-        /// </summary>
-        public double TopVisibleEdge
-        {
-            get { return (double)GetValue(TopVisibleEdgeProperty); }
-            set { SetValue(TopVisibleEdgeProperty, value); }
-        }
-
-        /// <summary>
-        /// Нижняя видимая граница координатной плоскости.
-        /// </summary>
-        public double BottomVisibleEdge
-        {
-            get { return (double)GetValue(BottomVisibleEdgeProperty); }
-            set { SetValue(BottomVisibleEdgeProperty, value); }
-        }
-
-        /// <summary>
-        /// Левая видимая граница координатной плоскости.
-        /// </summary>
-        public double LeftVisibleEdge
-        {
-            get { return (double)GetValue(LeftVisibleEdgeProperty); }
-            set { SetValue(LeftVisibleEdgeProperty, value); }
-        }
-
-        /// <summary>
-        /// Правая видимая граница координатной плоскости.
-        /// </summary>
-        public double RightVisibleEdge
-        {
-            get { return (double)GetValue(RightVisibleEdgeProperty); }
-            set { SetValue(RightVisibleEdgeProperty, value); }
-        }
-
         #endregion
 
         #region Приватные поля
@@ -230,6 +159,15 @@ namespace WPF.CTG
 
         private double _scaleRateX = 1;
         private double _scaleRateY = 1;
+
+        private RectangleGeometry _rectangleGeometry1;
+        private RectangleGeometry _rectangleGeometry2;
+        private DrawingBrush _drawingBrush;
+        private GeometryDrawing _geometryDrawing = new GeometryDrawing();
+
+        private Rect _rect1;// = new Rect { X = 1, Y = 1, Height = 5, Width = 5 };
+        private Rect _rect2;// = new Rect { X = 1.05, Y = 1.05, Height = 4.95, Width = 4.95 };
+        private Rect _rect3;// = new Rect { X = - 0.05, Y = -0.05, Height = 5, Width = 5 };
 
         #endregion
 
@@ -311,84 +249,42 @@ namespace WPF.CTG
         #region Методы
 
         /// <summary>
-        /// Инициализация сетки на заднем фоне координатной плоскости.
+        /// Инициализация сетки.
         /// </summary>
-        private void MarkingGridInitialize()
+        private void MarkingGridInitializeBackground()
         {
-            var vertCount = OriginalWidth / 10;
-            var horizCount = OriginalHeight / 10;
+            var thickness = (double)this.GetValue(MarkingGridStrokeThicknessProperty);
 
-            for (var x = 0; x < vertCount; x++)
+            thickness = thickness / 2;
+            var th = thickness / 2;
+
+            _rect1 = new Rect { X = 1, Y = 1, Height = 5, Width = 5 };
+            _rect2 = new Rect { X = _rect1.X + thickness, Y = _rect1.Y + thickness, Height = _rect1.Height - thickness, Width = _rect1.Width - thickness };
+            _rect3 = new Rect { X = 0, Y = 0, Height = _rect1.Height, Width = _rect1.Width };
+
+
+        _rectangleGeometry1 = new RectangleGeometry() {Rect = _rect1};
+            _rectangleGeometry2 = new RectangleGeometry() {Rect = _rect2};
+
+            var geometryGroup = new GeometryGroup() {FillRule = FillRule.EvenOdd};
+
+            geometryGroup.Children.Add(_rectangleGeometry1);
+            geometryGroup.Children.Add(_rectangleGeometry2);
+
+            _geometryDrawing.Brush = MarkingGridBrush;
+
+            _geometryDrawing.Geometry = geometryGroup;
+
+            _drawingBrush = new DrawingBrush()
             {
-                var vLine = new Line()
-                {
-                    Name = nameof(VerticalLine),
-                    X1 = x * 10,
-                    X2 = x * 10,
-                };
+                TileMode = TileMode.FlipXY,
+                Viewport = _rect3,
+                ViewportUnits = BrushMappingMode.Absolute,
+            };
 
-                Binding bindVisibleTop = new Binding();
-                bindVisibleTop.Source = this;
-                bindVisibleTop.Path = new PropertyPath(nameof(TopVisibleEdge));
-                bindVisibleTop.Mode = BindingMode.OneWay;
-                vLine.SetBinding(Line.Y1Property, bindVisibleTop);
+            _drawingBrush.Drawing = _geometryDrawing;
 
-                Binding bindVisibleBottom = new Binding();
-                bindVisibleBottom.Source = this;
-                bindVisibleBottom.Path = new PropertyPath(nameof(BottomVisibleEdge));
-                bindVisibleBottom.Mode = BindingMode.OneWay;
-                vLine.SetBinding(Line.Y2Property, bindVisibleBottom);
-
-                Binding bindMarkingGridBrush = new Binding();
-                bindMarkingGridBrush.Source = this;
-                bindMarkingGridBrush.Path = new PropertyPath(nameof(MarkingGridBrush));
-                bindMarkingGridBrush.Mode = BindingMode.OneWay;
-                vLine.SetBinding(Shape.StrokeProperty, bindMarkingGridBrush);
-
-                Binding bindMarkingGridStrokeThickness = new Binding();
-                bindMarkingGridStrokeThickness.Source = this;
-                bindMarkingGridStrokeThickness.Path = new PropertyPath(nameof(MarkingGridStrokeThickness));
-                bindMarkingGridStrokeThickness.Mode = BindingMode.OneWay;
-                vLine.SetBinding(Shape.StrokeThicknessProperty, bindMarkingGridStrokeThickness);
-
-                Children.Add(vLine);
-            }
-
-            for (var y = 0; y < horizCount; y++)
-            {
-                var hLine = new Line()
-                {
-                    Name = nameof(HorizontalLine),
-                    Y1 = y * 10,
-                    Y2 = y * 10,
-                };
-
-                Binding bindVisibleLeft = new Binding();
-                bindVisibleLeft.Source = this;
-                bindVisibleLeft.Path = new PropertyPath(nameof(LeftVisibleEdge));
-                bindVisibleLeft.Mode = BindingMode.OneWay;
-                hLine.SetBinding(Line.X1Property, bindVisibleLeft);
-
-                Binding bindVisibleRight = new Binding();
-                bindVisibleRight.Source = this;
-                bindVisibleRight.Path = new PropertyPath(nameof(RightVisibleEdge));
-                bindVisibleRight.Mode = BindingMode.OneWay;
-                hLine.SetBinding(Line.X2Property, bindVisibleRight);
-
-                Binding bindMarkingGridBrush = new Binding();
-                bindMarkingGridBrush.Source = this;
-                bindMarkingGridBrush.Path = new PropertyPath(nameof(MarkingGridBrush));
-                bindMarkingGridBrush.Mode = BindingMode.OneWay;
-                hLine.SetBinding(Shape.StrokeProperty, bindMarkingGridBrush);
-
-                Binding bindMarkingGridStrokeThickness = new Binding();
-                bindMarkingGridStrokeThickness.Source = this;
-                bindMarkingGridStrokeThickness.Path = new PropertyPath(nameof(MarkingGridStrokeThickness));
-                bindMarkingGridStrokeThickness.Mode = BindingMode.OneWay;
-                hLine.SetBinding(Shape.StrokeThicknessProperty, bindMarkingGridStrokeThickness);
-
-                Children.Add(hLine);
-            }
+            Background = _drawingBrush;
         }
 
         /// <summary>
@@ -412,23 +308,28 @@ namespace WPF.CTG
             {
                 foreach (FrameworkElement child in Children)
                 {
-                    if (child.Name == nameof(VerticalLine))
-                    {
-                        // Масштабируем координаты вертикальных линий разметки.
-                        var vertLine = (Line)child;
-                        vertLine.X1 *= ScaleDeltaX;
-                        vertLine.X2 *= ScaleDeltaX;
-                    }
-                    else
-                    {
-                        // Масштабируем размеры содержимого.
-                        child.Width *= ScaleDeltaX;
+                    // Масштабируем размеры содержимого.
+                    child.Width *= ScaleDeltaX;
 
-                        // Масштабируем координаты содержимого.
-                        child.SetCurrentValue(Canvas.LeftProperty, Canvas.GetLeft(child) * ScaleDeltaX);
-                    }
+                    // Масштабируем координаты содержимого.
+                    child.SetCurrentValue(Canvas.LeftProperty, Canvas.GetLeft(child) * ScaleDeltaX);
                 }
             }
+
+            var thickness = (double)this.GetValue(MarkingGridStrokeThicknessProperty);
+
+            thickness = thickness / 2;
+            var th = thickness / 2;
+
+            // Масштабируем сетку.
+            _rect1 = new Rect { X = _rect1.X, Y = _rect1.Y, Height = _rect1.Height, Width = _rect1.Width * ScaleDeltaX };
+            _rect2 = new Rect { X = _rect1.X + thickness, Y = _rect1.Y + thickness, Height = _rect1.Height - thickness, Width = _rect1.Width - thickness };
+            //_rect3 = new Rect { X = _rect3.X, Y = _rect3.Y, Height = _rect1.Height, Width = _rect1.Width };
+            _rect3 = new Rect { X = 0, Y = 0, Height = _rect1.Height, Width = _rect1.Width };
+
+            _rectangleGeometry1.Rect = _rect1;
+            _rectangleGeometry2.Rect = _rect2;
+            _drawingBrush.Viewport = _rect3;
         }
 
         /// <summary>
@@ -452,23 +353,26 @@ namespace WPF.CTG
             {
                 foreach (FrameworkElement child in Children)
                 {
-                    if (child.Name == nameof(HorizontalLine))
-                    {
-                        // Масштабируем координаты горизонтальных линий разметки.
-                        var horizontLine = (Line)child;
-                        horizontLine.Y1 *= ScaleDeltaY;
-                        horizontLine.Y2 *= ScaleDeltaY;
-                    }
-                    else
-                    {
-                        // Масштабируем размеры содержимого.
-                        child.Height *= ScaleDeltaY;
+                    // Масштабируем размеры содержимого.
+                    child.Height *= ScaleDeltaY;
 
-                        // Масштабируем координаты содержимого.
-                        child.SetCurrentValue(Canvas.TopProperty, Canvas.GetTop(child) * ScaleDeltaY);
-                    }
+                    // Масштабируем координаты содержимого.
+                    child.SetCurrentValue(Canvas.TopProperty, Canvas.GetTop(child) * ScaleDeltaY);
                 }
             }
+
+            // Используем толщину линий сетки.
+            var thickness = (double)this.GetValue(MarkingGridStrokeThicknessProperty);
+            thickness = thickness / 2;
+
+            // Масштабируем сетку.
+            _rect1 = new Rect { X = _rect1.X, Y = _rect1.Y, Height = _rect1.Height * ScaleDeltaY, Width = _rect1.Width };
+            _rect2 = new Rect { X = _rect1.X + thickness, Y = _rect1.Y + thickness, Height = _rect1.Height - thickness, Width = _rect1.Width - thickness };
+            _rect3 = new Rect { X = 0, Y = 0, Height = _rect1.Height, Width = _rect1.Width };
+
+            _rectangleGeometry1.Rect = _rect1;
+            _rectangleGeometry2.Rect = _rect2;
+            _drawingBrush.Viewport = _rect3;
         }
 
         #endregion
@@ -483,7 +387,7 @@ namespace WPF.CTG
         private void Canvas_Loaded(object sender, RoutedEventArgs e)
         {
             // Инициализация разметочной сетки.
-            MarkingGridInitialize();
+            MarkingGridInitializeBackground();
         }
 
         #endregion
@@ -547,6 +451,52 @@ namespace WPF.CTG
             {
                 var newValue = (double)e.NewValue;
                 obj.ScaleRateYChange(newValue);
+            }
+        }
+
+        /// <summary>
+        /// Изменение цвета сетки.
+        /// </summary>
+        /// <param name="d"></param>
+        /// <param name="e"></param>
+        private static void OnMarkingGridBrushPropertyChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var obj = d as ScalableCoordinatePlane;
+            if (obj != null)
+            {
+                var newValue = (Brush)e.NewValue;
+                obj._geometryDrawing.Brush = newValue;
+            }
+        }
+
+        /// <summary>
+        /// Изменение толщины линий сетки.
+        /// </summary>
+        /// <param name="d"></param>
+        /// <param name="e"></param>
+        private static void OnMarkingGridStrokeThicknessPropertyChange(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var obj = d as ScalableCoordinatePlane;
+            if (obj != null)
+            {
+                if (obj._rectangleGeometry1 != null && obj._rectangleGeometry2 != null && obj._drawingBrush != null)
+                {
+                    var thickness = (double)e.NewValue;
+                    thickness = thickness / 2;
+
+                    var x = obj._rectangleGeometry1.Rect.X;
+                    var y = obj._rectangleGeometry1.Rect.Y;
+                    var height = obj._rectangleGeometry1.Rect.Height;
+                    var width = obj._rectangleGeometry1.Rect.Width;
+
+                    var rect1 = new Rect { X = x, Y = y, Height = height, Width = width };
+                    var rect2 = new Rect { X = x + thickness, Y = y + thickness, Height = height - thickness, Width = width - thickness };
+                    var rect3 = new Rect { X = 0, Y = 0, Height = height, Width = width };
+
+                    obj._rectangleGeometry1.Rect = rect1;
+                    obj._rectangleGeometry2.Rect = rect2;
+                    obj._drawingBrush.Viewport = rect3;
+                }
             }
         }
 

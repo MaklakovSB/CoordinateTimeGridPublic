@@ -5,6 +5,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:local="clr-namespace:СoordinateTimeGridSample"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         x:Name="rootWindow"
         Title="MainWindow"
         mc:Ignorable="d">
@@ -20,17 +21,21 @@
         </Grid.RowDefinitions>
         <ctg:CoordinateTimeGrid x:Name="_coordinateTimeGrid"
                                 Grid.Row="0"
-                                DebugInfoVisibility="Visible"
-                                HorizontalScrollBarVisibility="Visible"
-                                IsBlockingScaleX="False"
-                                IsBlockingScaleY="False"
-                                MarkingGridBrush="LawnGreen"
+                                Background="#FF1E1E1E"
+                                DebugInfoVisibility="{Binding DebugInfoVisibility,
+                                                              ElementName=rootWindow}"
+                                HorizontalScrollBarVisibility="{Binding HorizontalScrollBarVisibility, ElementName=rootWindow}"
+                                IsBlockingScaleX="{Binding IsBlockingScaleX, ElementName=rootWindow}"
+                                IsBlockingScaleY="{Binding IsBlockingScaleY, ElementName=rootWindow}"
+                                MarkingGridBrush="{Binding MarkingGridBrush,
+                                                           ElementName=rootWindow,
+                                                           Mode=OneWay}"
                                 MarkingGridStrokeThickness="{Binding Path=Value,
                                                                      ElementName=sliderStrokeThickness,
                                                                      Mode=TwoWay}"
                                 OriginalPlaneHeight="1500"
                                 OriginalPlaneWidth="15000"
-                                VerticalScrollBarVisibility="Visible">
+                                VerticalScrollBarVisibility="{Binding VerticalScrollBarVisibility, ElementName=rootWindow}">
 
             <Ellipse Width="500"
                      Height="500"
@@ -361,16 +366,31 @@
         </ctg:CoordinateTimeGrid>
 
         <StackPanel Grid.Row="1" Orientation="Horizontal">
-            <Button Click="Button_Click" Content="  Тест смены цвета разметочной сетки.  " />
             <StackPanel>
-                <Label x:Name="testLabelStrokeThickness" Content="Тест изменения толщины разметочной сетки." />
+                <Label Content="Цвет разметочной сетки." />
+                <xctk:ColorPicker x:Name="_colorPicker" SelectedColor="{Binding SelectedColor, ElementName=rootWindow, Mode=TwoWay}" />
+            </StackPanel>
+
+            <StackPanel>
+                <Label Content="Тест изменения толщины разметочной сетки." />
                 <Slider x:Name="sliderStrokeThickness"
                         Width="{Binding Path=ActualWidth,
                                         ElementName=testLabelStrokeThickness}"
-                        Maximum="3.9"
-                        Minimum="0.0"
+                        Maximum="1.7"
+                        Minimum="0.0008"
                         SmallChange="0.01"
                         Value="0.2" />
+            </StackPanel>
+
+            <StackPanel>
+                <CheckBox Content="Показывать окно отладочной информации." IsChecked="{Binding IsDebugInfoVisibilityChecked, ElementName=rootWindow, Mode=TwoWay}" />
+                <CheckBox Content="Показывать горизонтальную полосу прокрутки." IsChecked="{Binding IsHorizontalScrollBarVisibilityChecked, ElementName=rootWindow, Mode=TwoWay}" />
+                <CheckBox Content="Показывать вертикальную полосу прокрутки." IsChecked="{Binding IsVerticalScrollBarVisibilityChecked, ElementName=rootWindow, Mode=TwoWay}" />
+            </StackPanel>
+
+            <StackPanel>
+                <CheckBox Content="Блокировать масштабирование по оси Х." IsChecked="{Binding IsBlockingScaleX, ElementName=rootWindow}"/>
+                <CheckBox Content="Блокировать масштабирование по оси Y." IsChecked="{Binding IsBlockingScaleY, ElementName=rootWindow}"/>
             </StackPanel>
         </StackPanel>
     </Grid>
