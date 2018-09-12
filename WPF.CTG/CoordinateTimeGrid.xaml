@@ -8,8 +8,8 @@
              x:Name="RootUserControl"
              d:DesignHeight="1500"
              d:DesignWidth="1500"
-             mc:Ignorable="d" 
-             SnapsToDevicePixels="True">
+             SnapsToDevicePixels="True"
+             mc:Ignorable="d">
     <UserControl.Resources>
         <converters:DoubleInvertSignConverter x:Key="disc" />
         <converters:AxialDimensionToScrollMaxConverter x:Key="adtsmc" />
@@ -39,7 +39,8 @@
                 Background="{Binding Background,
                                      ElementName=_coordinateViewPort}"
                 ClipToBounds="True"
-                SnapsToDevicePixels="True">
+                SnapsToDevicePixels="True"
+                Visibility="{Binding HorizontalRulerPanelVisibility}">
             <local:RulerPanel x:Name="horizontalRulerPanel"
                               Canvas.Left="{Binding TransformManager.CanvasLeft,
                                                     ElementName=RootUserControl}"
@@ -67,7 +68,7 @@
 
         <ScrollBar x:Name="_verticalScrollBar"
                    Grid.Row="0"
-                   Grid.RowSpan="2"
+                   Grid.RowSpan="3"
                    Grid.Column="2"
                    Orientation="Vertical"
                    ViewportSize="{Binding ActualHeight,
@@ -92,7 +93,8 @@
                 Background="{Binding Background,
                                      ElementName=_coordinateViewPort}"
                 ClipToBounds="True"
-                SnapsToDevicePixels="True">
+                SnapsToDevicePixels="True"
+                Visibility="{Binding VerticalRulerPanelVisibility}">
             <local:RulerPanel x:Name="verticalRulerPanel"
                               Canvas.Left="0"
                               Canvas.Top="{Binding TransformManager.CanvasTop,
@@ -121,7 +123,8 @@
         <Canvas x:Name="_coordinateViewPort"
                 Grid.Row="1"
                 Grid.Column="1"
-                Background="{Binding Background, ElementName=RootUserControl}"
+                Background="{Binding Background,
+                                     ElementName=RootUserControl}"
                 ClipToBounds="True"
                 SnapsToDevicePixels="True">
 
@@ -130,7 +133,6 @@
                                                                  ElementName=RootUserControl}"
                                            Canvas.Top="{Binding TransformManager.CanvasTop,
                                                                 ElementName=RootUserControl}"
-
                                            MarkingGridBrush="{Binding MarkingGridBrush,
                                                                       ElementName=RootUserControl,
                                                                       Mode=TwoWay}"
@@ -141,7 +143,6 @@
                                                                     ElementName=RootUserControl}"
                                            OriginalWidth="{Binding OriginalPlaneWidth,
                                                                    ElementName=RootUserControl}"
-
                                            ScaleRateX="{Binding TransformManager.ScaleRateX,
                                                                 ElementName=RootUserControl}"
                                            ScaleRateY="{Binding TransformManager.ScaleRateY,

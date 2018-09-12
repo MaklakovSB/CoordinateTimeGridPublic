@@ -21,12 +21,17 @@
         </Grid.RowDefinitions>
         <ctg:CoordinateTimeGrid x:Name="_coordinateTimeGrid"
                                 Grid.Row="0"
-                                Background="#FF1E1E1E"
+                                Background="{Binding BackgroundBrush, ElementName=rootWindow}"
                                 DebugInfoVisibility="{Binding DebugInfoVisibility,
                                                               ElementName=rootWindow}"
-                                HorizontalScrollBarVisibility="{Binding HorizontalScrollBarVisibility, ElementName=rootWindow}"
-                                IsBlockingScaleX="{Binding IsBlockingScaleX, ElementName=rootWindow}"
-                                IsBlockingScaleY="{Binding IsBlockingScaleY, ElementName=rootWindow}"
+                                HorizontalScrollBarVisibility="{Binding HorizontalScrollBarVisibility,
+                                                                        ElementName=rootWindow}"
+                                HorizontalRulerPanelVisibility="{Binding HorizontalRulerPanelVisibility,
+                                ElementName=rootWindow}"
+                                IsBlockingScaleX="{Binding IsBlockingScaleX,
+                                                           ElementName=rootWindow}"
+                                IsBlockingScaleY="{Binding IsBlockingScaleY,
+                                                           ElementName=rootWindow}"
                                 MarkingGridBrush="{Binding MarkingGridBrush,
                                                            ElementName=rootWindow,
                                                            Mode=OneWay}"
@@ -35,7 +40,10 @@
                                                                      Mode=TwoWay}"
                                 OriginalPlaneHeight="1500"
                                 OriginalPlaneWidth="15000"
-                                VerticalScrollBarVisibility="{Binding VerticalScrollBarVisibility, ElementName=rootWindow}">
+                                VerticalScrollBarVisibility="{Binding VerticalScrollBarVisibility,
+                                                                      ElementName=rootWindow}"
+                                VerticalRulerPanelVisibility="{Binding VerticalRulerPanelVisibility,
+                                                                      ElementName=rootWindow}">
 
             <Ellipse Width="500"
                      Height="500"
@@ -351,7 +359,6 @@
                        ctg:CoordinateTimeGrid.Y="470"
                        Fill="DarkGray" />
 
-
             <Rectangle Width="160"
                        Height="20"
                        ctg:CoordinateTimeGrid.X="580"
@@ -368,7 +375,12 @@
         <StackPanel Grid.Row="1" Orientation="Horizontal">
             <StackPanel>
                 <Label Content="Цвет разметочной сетки." />
-                <xctk:ColorPicker x:Name="_colorPicker" SelectedColor="{Binding SelectedColor, ElementName=rootWindow, Mode=TwoWay}" />
+                <xctk:ColorPicker SelectedColor="{Binding SelectedGridColor, ElementName=rootWindow, Mode=TwoWay}" />
+            </StackPanel>
+
+            <StackPanel>
+                <Label Content="Цвет фона." />
+                <xctk:ColorPicker SelectedColor="{Binding SelectedBackgroundColor, ElementName=rootWindow, Mode=TwoWay}" />
             </StackPanel>
 
             <StackPanel>
@@ -384,13 +396,18 @@
 
             <StackPanel>
                 <CheckBox Content="Показывать окно отладочной информации." IsChecked="{Binding IsDebugInfoVisibilityChecked, ElementName=rootWindow, Mode=TwoWay}" />
+                <CheckBox Content="Блокировать масштабирование по оси Х." IsChecked="{Binding IsBlockingScaleX, ElementName=rootWindow}" />
+                <CheckBox Content="Блокировать масштабирование по оси Y." IsChecked="{Binding IsBlockingScaleY, ElementName=rootWindow}" />
+            </StackPanel>
+
+            <StackPanel>
                 <CheckBox Content="Показывать горизонтальную полосу прокрутки." IsChecked="{Binding IsHorizontalScrollBarVisibilityChecked, ElementName=rootWindow, Mode=TwoWay}" />
                 <CheckBox Content="Показывать вертикальную полосу прокрутки." IsChecked="{Binding IsVerticalScrollBarVisibilityChecked, ElementName=rootWindow, Mode=TwoWay}" />
             </StackPanel>
 
             <StackPanel>
-                <CheckBox Content="Блокировать масштабирование по оси Х." IsChecked="{Binding IsBlockingScaleX, ElementName=rootWindow}"/>
-                <CheckBox Content="Блокировать масштабирование по оси Y." IsChecked="{Binding IsBlockingScaleY, ElementName=rootWindow}"/>
+                <CheckBox Content="Показывать горизонтальную линейку." IsChecked="{Binding IsHorizontalRulerPanelVisibilityChecked, ElementName=rootWindow, Mode=TwoWay}" />
+                <CheckBox Content="Показывать вертикальную линейку." IsChecked="{Binding IsVerticalRulerPanelVisibilityChecked, ElementName=rootWindow, Mode=TwoWay}" />
             </StackPanel>
         </StackPanel>
     </Grid>

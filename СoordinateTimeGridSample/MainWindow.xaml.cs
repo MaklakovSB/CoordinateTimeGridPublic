@@ -10,28 +10,53 @@ namespace СoordinateTimeGridSample
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
-        /// <summary>
-        /// Цвет сетки.
-        /// </summary>
-        public Brush MarkingGridBrush => (Brush) new SolidColorBrush(SelectedColor);
+        #region Свойства
 
         /// <summary>
         /// Цвет сетки.
         /// </summary>
-        public Color SelectedColor
+        public Brush MarkingGridBrush => (Brush) new SolidColorBrush(SelectedGridColor);
+
+        /// <summary>
+        /// Цвет сетки.
+        /// </summary>
+        public Color SelectedGridColor
         {
             get
             {
-                return _selectedColor;
+                return _selectedGridColor;
             }
             set
             {
-                _selectedColor = value;
-                OnPropertyChanged(nameof(SelectedColor));
+                _selectedGridColor = value;
+                OnPropertyChanged(nameof(SelectedGridColor));
                 OnPropertyChanged(nameof(MarkingGridBrush));
             }
         }
-        private Color _selectedColor = Brushes.Chartreuse.Color;
+        private Color _selectedGridColor = Brushes.Chartreuse.Color;
+
+        /// <summary>
+        /// Цвет фона.
+        /// </summary>
+        public Brush BackgroundBrush => (Brush)new SolidColorBrush(SelectedBackgroundColor);
+
+        /// <summary>
+        /// Цвет фона.
+        /// </summary>
+        public Color SelectedBackgroundColor
+        {
+            get
+            {
+                return _selectedBackgroundColor;
+            }
+            set
+            {
+                _selectedBackgroundColor = value;
+                OnPropertyChanged(nameof(SelectedBackgroundColor));
+                OnPropertyChanged(nameof(BackgroundBrush));
+            }
+        }
+        private Color _selectedBackgroundColor = Brushes.Black.Color;
 
         /// <summary>
         /// Показывать окно отладочной информации.
@@ -94,6 +119,46 @@ namespace СoordinateTimeGridSample
         private bool _isVerticalScrollBarVisibilityChecked = true;
 
         /// <summary>
+        /// Показывать горизонтальную линейку.
+        /// </summary>
+        public Visibility HorizontalRulerPanelVisibility => _isHorizontalRulerPanelVisibilityChecked ? Visibility.Visible : Visibility.Collapsed;
+
+        /// <summary>
+        /// Показывать горизонтальную линейку.
+        /// </summary>
+        public bool IsHorizontalRulerPanelVisibilityChecked
+        {
+            get { return _isHorizontalRulerPanelVisibilityChecked; }
+            set
+            {
+                _isHorizontalRulerPanelVisibilityChecked = value;
+                OnPropertyChanged(nameof(IsHorizontalRulerPanelVisibilityChecked));
+                OnPropertyChanged(nameof(HorizontalRulerPanelVisibility));
+            }
+        }
+        private bool _isHorizontalRulerPanelVisibilityChecked = true;
+
+        /// <summary>
+        /// Показывать вертикальную линейку.
+        /// </summary>
+        public Visibility VerticalRulerPanelVisibility => _isVerticalRulerPanelVisibilityChecked ? Visibility.Visible : Visibility.Collapsed;
+
+        /// <summary>
+        /// Показывать вертикальную линейку.
+        /// </summary>
+        public bool IsVerticalRulerPanelVisibilityChecked
+        {
+            get { return _isVerticalRulerPanelVisibilityChecked; }
+            set
+            {
+                _isVerticalRulerPanelVisibilityChecked = value;
+                OnPropertyChanged(nameof(IsVerticalRulerPanelVisibilityChecked));
+                OnPropertyChanged(nameof(VerticalRulerPanelVisibility));
+            }
+        }
+        private bool _isVerticalRulerPanelVisibilityChecked = true;
+
+        /// <summary>
         /// Блокировать масштабирование по оси Х.
         /// </summary>
         public bool IsBlockingScaleX
@@ -121,11 +186,20 @@ namespace СoordinateTimeGridSample
         }
         private bool _isBlockingScaleY;
 
+        #endregion
+
+        #region * Конструктор
+
+        /// <summary>
+        /// * Конструктор
+        /// </summary>
         public MainWindow()
         {
             DataContext = this;
             InitializeComponent();
         }
+
+        #endregion
 
         #region Реализация интерфейсов
 

@@ -60,6 +60,24 @@ namespace WPF.CTG
             new PropertyMetadata(Visibility.Collapsed));
 
         /// <summary>
+        /// Визуальное состояние вертикальной линейки.
+        /// </summary>
+        public static readonly DependencyProperty VerticalRulerPanelVisibilityProperty = DependencyProperty.Register(
+            nameof(VerticalRulerPanelVisibility),
+            typeof(Visibility),
+            typeof(CoordinateTimeGrid),
+            new PropertyMetadata(Visibility.Collapsed));
+
+        /// <summary>
+        /// Визуальное состояние горизонтальной линейки.
+        /// </summary>
+        public static readonly DependencyProperty HorizontalRulerPanelVisibilityProperty = DependencyProperty.Register(
+            nameof(HorizontalRulerPanelVisibility),
+            typeof(Visibility),
+            typeof(CoordinateTimeGrid),
+            new PropertyMetadata(Visibility.Collapsed));
+
+        /// <summary>
         /// Цвет кисти разметочной сетки.
         /// </summary>
         public static readonly DependencyProperty MarkingGridBrushProperty = DependencyProperty.Register(
@@ -175,6 +193,24 @@ namespace WPF.CTG
         {
             get { return (Visibility)GetValue(HorizontalScrollBarVisibilityProperty); }
             set { SetValue(HorizontalScrollBarVisibilityProperty, value); }
+        }
+
+        /// <summary>
+        /// Визуальное состояние вертикальной линейки.
+        /// </summary>
+        public Visibility VerticalRulerPanelVisibility
+        {
+            get { return (Visibility)GetValue(VerticalRulerPanelVisibilityProperty); }
+            set { SetValue(VerticalRulerPanelVisibilityProperty, value); }
+        }
+
+        /// <summary>
+        /// Визуальное состояние горизонтальной линейки.
+        /// </summary>
+        public Visibility HorizontalRulerPanelVisibility
+        {
+            get { return (Visibility)GetValue(HorizontalRulerPanelVisibilityProperty); }
+            set { SetValue(HorizontalRulerPanelVisibilityProperty, value); }
         }
 
         /// <summary>
